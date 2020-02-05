@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -12,6 +13,10 @@ import (
 )
 
 func authentication(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println(jwtKey)
+
+	fmt.Println(port)
 
 	var creds M.Credentials
 	// Get the JSON body and decode into credentials
@@ -35,7 +40,7 @@ func authentication(w http.ResponseWriter, r *http.Request) {
 
 	// Declare the expiration time of the token
 	// here, we have kept it as 5 minutes
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(8 * time.Hour)
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &M.Claims{
 		Username: creds.Username,
@@ -48,7 +53,7 @@ func authentication(w http.ResponseWriter, r *http.Request) {
 	// Declare the token with the algorithm used for signing, and the claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// Create the JWT string
-	tokenString, err := token.SignedString(M.JwtKey)
+	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
 		// If there is an error in creating the JWT return an internal server error
 		w.WriteHeader(http.StatusInternalServerError)

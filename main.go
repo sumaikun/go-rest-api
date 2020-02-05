@@ -10,9 +10,24 @@ import (
 	"github.com/gorilla/mux"
 
 	middleware "github.com/sumaikun/go-rest-api/middlewares"
+
+	Config "github.com/sumaikun/go-rest-api/config"
 )
 
-var port string = "8090"
+var (
+	port   string
+	jwtKey []byte
+)
+
+func init() {
+
+	var config = Config.Config{}
+	config.Read()
+	//fmt.Println(config.Jwtkey)
+	jwtKey = []byte(config.Jwtkey)
+	port = config.Port
+
+}
 
 type event struct {
 	ID          string `json:"ID"`

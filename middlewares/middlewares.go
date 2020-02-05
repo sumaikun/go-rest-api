@@ -7,19 +7,26 @@ import (
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 
-	M "github.com/sumaikun/go-rest-api/models"
+	C "github.com/sumaikun/go-rest-api/config"
 )
 
 // AuthMiddleware verify
 func AuthMiddleware(next http.Handler) http.Handler {
-	if len(M.JwtKey) == 0 {
+
+	var config = C.Config{}
+	config.Read()
+
+	var JwtKey = []byte(config.Jwtkey)
+
+	if len(JwtKey) == 0 {
 		log.Fatal("HTTP server unable to start, expected an APP_KEY for JWT auth")
 	}
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return []byte(M.JwtKey), nil
+			return []byte(JwtKey), nil
 		},
 		SigningMethod: jwt.SigningMethodHS256,
 	})
 	return jwtMiddleware.Handler(next)
+
 }

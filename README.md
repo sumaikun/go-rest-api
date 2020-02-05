@@ -13,3 +13,9 @@ Main instructions:
     go get -u github.com/auth0/go-jwt-middleware
 4. generate server
     go build in project root folder
+5. Add toml env variables
+    go get -u github.com/BurntSushi/toml
+
+    Must be a necesary a file with a name config.toml and 2 const defined
+    port = "8090"
+    jwtKey = "anykeystring"
