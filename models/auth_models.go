@@ -12,8 +12,8 @@ type Credentials struct {
 
 // Users are test users for generate jwt token
 var Users = map[string]string{
-	"user1": "password1",
-	"user2": "password2",
+	"sumaikun": "$2a$14$6NWsioRmg3dogylbm0j3e.0RVDAN2dybn2HzecrFCNex9PPxsEJLi",
+	"user2":    "$2a$14$6NWsioRmg3dogylbm0j3e.0RVDAN2dybn2HzecrFCNex9PPxsEJLi",
 }
 
 // Claims represents the struct of jwt token

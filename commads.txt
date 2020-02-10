@@ -1,14 +1,34 @@
 1. get http server     
     go get -u github.com/gorilla/mux
+
 2. get jwt token generator
     go get -u github.com/dgrijalva/jwt-go
+
 3. get jwt middleware 
     go get -u github.com/auth0/go-jwt-middleware
+
 4. generate server
     go build in project root folder
+
 5. Add toml env variables
     go get -u github.com/BurntSushi/toml
 
-    Must be a necesary a file with a name config.toml and 2 const defined
+    Must be a necessary a file with a name config.toml and 2 const defined
     port = "8090"
     jwtKey = "anykeystring"
+
+6. get mongo db connector
+    
+    go get gopkg.in/mgo.v2
+
+7. get bson formatter, the bson is included in mongo package
+
+    go get gopkg.in/mgo.v2/bson
+
+8. get request validator 
+
+    go get -u github.com/thedevsaddam/govalidator
+
+9. password encryptor plugin
+
+    go get golang.org/x/crypto/bcrypt

@@ -16,6 +16,6 @@ Main instructions:
 5. Add toml env variables
     go get -u github.com/BurntSushi/toml
 
-    Must be a necesary a file with a name config.toml and 2 const defined
+    Must be a necessary a file with a name config.toml and 2 const defined
     port = "8090"
     jwtKey = "anykeystring"
