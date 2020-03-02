@@ -2,9 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -22,6 +27,8 @@ func authentication(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
+	response := &Models.TokenResponse{Token: "", User: nil}
+
 	var creds Models.Credentials
 	// Get the JSON body and decode into credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
@@ -38,7 +45,7 @@ func authentication(w http.ResponseWriter, r *http.Request) {
 	// If a password exists for the given user
 	// AND, if it is the same as the password we received, the we can move ahead
 	// if NOT, then we return an "Unauthorized" status
-	if !ok || Helpers.CheckPasswordHash(creds.Password, expectedPassword) {
+	if !ok || !Helpers.CheckPasswordHash(creds.Password, expectedPassword) {
 
 		user, err := dao.FindOneByKEY("users", "email", creds.Username)
 
@@ -53,6 +60,8 @@ func authentication(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
+
+			response.User = user.(bson.M)
 
 		}
 
@@ -91,7 +100,9 @@ func authentication(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 
 	//Generate json response for get the token
-	json.NewEncoder(w).Encode(&Models.TokenResponse{Token: tokenString})
+	response.Token = tokenString
+
+	json.NewEncoder(w).Encode(response)
 }
 
 func exampleHandler(w http.ResponseWriter, r *http.Request) {
@@ -210,4 +221,417 @@ func updateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 
+}
+
+//-------------------------------------- Products Functions ----------------------------------
+
+func allProductsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-type", "application/json")
+
+	products, err := dao.FindAll("products")
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, products)
+}
+
+func createProductEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	err, product := productValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	product.ID = bson.NewObjectId()
+	product.Date = time.Now().String()
+	product.UpdateDate = time.Now().String()
+
+	if err := dao.Insert("products", product, []string{"name"}); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusCreated, product)
+
+}
+
+func findProductEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	product, err := dao.FindByID("products", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Product ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, product)
+
+}
+
+func removeProductEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	err := dao.DeleteByID("products", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Product ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
+
+}
+
+func updateProductEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	err, product := productValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	prevData, err2 := dao.FindByID("products", params["id"])
+	if err2 != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Product ID")
+		return
+	}
+
+	parsedData := prevData.(bson.M)
+
+	product.ID = parsedData["_id"].(bson.ObjectId)
+
+	product.Date = parsedData["date"].(string)
+
+	product.UpdateDate = time.Now().String()
+
+	if err := dao.Update("products", product.ID, product); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+
+}
+
+//-------------------------------------- Contacts functions ----------------------------------
+
+func allContactsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-type", "application/json")
+
+	contacts, err := dao.FindAll("contacts")
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, contacts)
+}
+
+func createContactEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	err, contact := contactValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	contact.ID = bson.NewObjectId()
+	contact.Date = time.Now().String()
+	contact.UpdateDate = time.Now().String()
+
+	if err := dao.Insert("contacts", contact, []string{"name", "identification", "email"}); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusCreated, contact)
+
+}
+
+func findContactEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	contact, err := dao.FindByID("contacts", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Contact ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, contact)
+
+}
+
+func removeContactEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	err := dao.DeleteByID("contacts", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Contact ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
+
+}
+
+func updateContactEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	err, contact := contactValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	prevData, err2 := dao.FindByID("contacts", params["id"])
+	if err2 != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Contact ID")
+		return
+	}
+
+	parsedData := prevData.(bson.M)
+
+	contact.ID = parsedData["_id"].(bson.ObjectId)
+
+	contact.Date = parsedData["date"].(string)
+
+	contact.UpdateDate = time.Now().String()
+
+	if err := dao.Update("contacts", contact.ID, contact); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+
+}
+
+//-------------------------------------- Pet functions ----------------------------------
+
+func allPetsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-type", "application/json")
+
+	pets, err := dao.FindAll("pets")
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, pets)
+}
+
+func createPetEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	err, pet := petValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	pet.ID = bson.NewObjectId()
+	pet.Date = time.Now().String()
+	pet.UpdateDate = time.Now().String()
+
+	if err := dao.Insert("pets", pet, nil); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusCreated, pet)
+
+}
+
+func findPetEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	pet, err := dao.FindByID("pets", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, pet)
+
+}
+
+func removePetEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	err := dao.DeleteByID("pets", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
+
+}
+
+func updatePetEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	err, pet := petValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	prevData, err2 := dao.FindByID("pets", params["id"])
+	if err2 != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+
+	parsedData := prevData.(bson.M)
+
+	pet.ID = parsedData["_id"].(bson.ObjectId)
+
+	pet.Date = parsedData["date"].(string)
+
+	pet.UpdateDate = time.Now().String()
+
+	if err := dao.Update("pets", pet.ID, pet); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+
+}
+
+//-------------------------------------- file Upload -----------------------------------------
+
+func fileUpload(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("File Upload Endpoint Hit")
+
+	// Parse our multipart form, 10 << 20 specifies a maximum
+	// upload of 10 MB files.
+	r.ParseMultipartForm(10 << 20)
+
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		fmt.Println("Error Retrieving the File")
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	defer file.Close()
+
+	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+	fmt.Printf("File Size: %+v\n", handler.Size)
+	fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+	var extension = filepath.Ext(handler.Filename)
+
+	fmt.Printf("Extension: %+v\n", extension)
+
+	tempFile, err := ioutil.TempFile("files", "upload-*"+extension)
+
+	if err != nil {
+		fmt.Println(err)
+		Helpers.RespondWithJSON(w, http.StatusInternalServerError, err)
+	}
+
+	var tempName = strings.Trim(tempFile.Name(), "files/")
+
+	defer tempFile.Close()
+
+	// read all of the contents of our uploaded file into a
+	// byte array
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+		Helpers.RespondWithJSON(w, http.StatusInternalServerError, err)
+	}
+	// write this byte array to our temporary file
+	tempFile.Write(fileBytes)
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"filename": tempName})
+
+}
+
+func serveImage(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	var fileName = params["image"]
+
+	if !strings.Contains(fileName, "png") && !strings.Contains(fileName, "jpg") && !strings.Contains(fileName, "jpeg") && !strings.Contains(fileName, "gif") {
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, map[string]string{"result": "invalid file extension"})
+		return
+	}
+
+	img, err := os.Open("./files/" + params["image"])
+	if err != nil {
+		//log.Fatal(err) // perhaps handle this nicer
+		Helpers.RespondWithJSON(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer img.Close()
+	w.Header().Set("Content-Type", "image/jpeg") // <-- set the content-type header
+	io.Copy(w, img)
+
+}
+
+// Enums --------------------------------------------------------------------
+
+func userRoles(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	x := [3]string{"developer", "doctor", "assistant"}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, x)
+}
+
+func contactStratus(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	x := [6]string{"estrato 1", "estrato 2", "estrato 3", "estrato 4", "estrato 5", "estrato 6"}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, x)
+}
+
+func contactDocumentType(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	x := [4]string{"CC", "CE", "Pasaporte", "TI"}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, x)
 }
