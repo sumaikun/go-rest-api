@@ -26,6 +26,7 @@ type Product struct {
 	Date              string        `bson:"date" json:"date"`
 	UpdateDate        string        `bson:"update_date" json:"update_date"`
 	AdministrationWay string        `bson:"administrationWay" json:"administrationWay"`
+	Presentation      string        `bson:"presentation" json:"presentation"`
 }
 
 //Contact representation on mongo
