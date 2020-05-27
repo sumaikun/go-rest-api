@@ -1,10 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
+	"time"
 
 	Models "github.com/sumaikun/go-rest-api/models"
 	"github.com/thedevsaddam/govalidator"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func userValidator(r *http.Request) (map[string]interface{}, Models.User) {
@@ -103,15 +107,13 @@ func petValidator(r *http.Request) (map[string]interface{}, Models.Pet) {
 	var pet Models.Pet
 
 	rules := govalidator.MapData{
-		"name":        []string{"required"},
-		"species":     []string{"required"},
-		"breed":       []string{"required"},
-		"color":       []string{"required"},
-		"sex":         []string{"required"},
-		"birthDate":   []string{"required"},
-		"age":         []string{"required", "numeric"},
-		"origin":      []string{"required"},
-		"description": []string{"required"},
+		"name":    []string{"required"},
+		"species": []string{"required"},
+		"breed":   []string{"required"},
+		"color":   []string{"required"},
+		"sex":     []string{"required"},
+		"age":     []string{"required"},
+		"origin":  []string{"required"},
 	}
 
 	opts := govalidator.Options{
@@ -128,4 +130,111 @@ func petValidator(r *http.Request) (map[string]interface{}, Models.Pet) {
 	err := map[string]interface{}{"validationError": e}
 
 	return err, pet
+}
+
+func breedsValidator(r *http.Request) (map[string]interface{}, Models.Breeds) {
+
+	var parameters Models.Breeds
+
+	rules := govalidator.MapData{
+		"name":    []string{"required"},
+		"species": []string{"required"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &parameters,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, parameters
+}
+
+func speciesValidator(r *http.Request) (map[string]interface{}, Models.Species) {
+
+	var parameters Models.Species
+
+	rules := govalidator.MapData{
+		"name": []string{"required"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &parameters,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, parameters
+}
+
+func validatorSelector(r *http.Request, entity string) (map[string]interface{}, interface{}, []string) {
+
+	var err map[string]interface{} = nil
+
+	switch entity {
+	case "breeds":
+		err, data := breedsValidator(r)
+		if len(err["validationError"].(url.Values)) == 0 {
+			data.ID = bson.NewObjectId()
+			data.Date = time.Now().String()
+			data.UpdateDate = time.Now().String()
+		}
+		return err, data, []string{"name"}
+
+	case "species":
+		err, data := speciesValidator(r)
+		if len(err["validationError"].(url.Values)) == 0 {
+			data.ID = bson.NewObjectId()
+			data.Date = time.Now().String()
+			data.UpdateDate = time.Now().String()
+		}
+		fmt.Println(data)
+		return err, data, []string{"name"}
+	}
+
+	return err, nil, nil
+
+}
+
+func validatorSelectorUpdate(r *http.Request, entity string, prevData bson.M) (map[string]interface{}, interface{}, interface{}) {
+
+	var err map[string]interface{} = nil
+
+	switch entity {
+	case "breeds":
+		err, data := breedsValidator(r)
+		if len(err["validationError"].(url.Values)) == 0 {
+			data.ID = prevData["_id"].(bson.ObjectId)
+			data.Date = prevData["date"].(string)
+			data.UpdateDate = time.Now().String()
+		}
+		return err, data, data.ID
+
+	case "species":
+		err, data := speciesValidator(r)
+		if len(err["validationError"].(url.Values)) == 0 {
+			data.ID = prevData["_id"].(bson.ObjectId)
+			data.Date = prevData["date"].(string)
+			data.UpdateDate = time.Now().String()
+		}
+
+		return err, data, data.ID
+	}
+
+	return err, nil, nil
+
 }

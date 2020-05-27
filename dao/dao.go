@@ -50,6 +50,9 @@ func (mongo *MongoConnector) Insert(collection string, data interface{}, uniqueK
 
 //FindByID in repository
 func (mongo *MongoConnector) FindByID(collection string, id string) (interface{}, error) {
+
+	//fmt.Println(collection, id)
+
 	var data interface{}
 	err := db.C(collection).FindId(bson.ObjectIdHex(id)).One(&data)
 	return data, err

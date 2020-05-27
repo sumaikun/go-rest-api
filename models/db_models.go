@@ -18,13 +18,14 @@ type User struct {
 
 //Product representation on mongo
 type Product struct {
-	ID          bson.ObjectId `bson:"_id" json:"id"`
-	Name        string        `bson:"name" json:"name"`
-	Value       string        `bson:"value" json:"value"`
-	Description string        `bson:"description" json:"description"`
-	Picture     string        `bson:"picture" json:"picture"`
-	Date        string        `bson:"date" json:"date"`
-	UpdateDate  string        `bson:"update_date" json:"update_date"`
+	ID                bson.ObjectId `bson:"_id" json:"id"`
+	Name              string        `bson:"name" json:"name"`
+	Value             string        `bson:"value" json:"value"`
+	Description       string        `bson:"description" json:"description"`
+	Picture           string        `bson:"picture" json:"picture"`
+	Date              string        `bson:"date" json:"date"`
+	UpdateDate        string        `bson:"update_date" json:"update_date"`
+	AdministrationWay string        `bson:"administrationWay" json:"administrationWay"`
 }
 
 //Contact representation on mongo
@@ -59,4 +60,23 @@ type Pet struct {
 	Picture     string        `bson:"picture" json:"picture"`
 	Date        string        `bson:"date" json:"date"`
 	UpdateDate  string        `bson:"update_date" json:"update_date"`
+}
+
+//Breeds representation on mongo
+type Breeds struct {
+	ID         bson.ObjectId `bson:"_id" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Species    string        `bson:"species" json:"species"`
+	Meta       string        `bson:"meta" json:"meta"`
+	Date       string        `bson:"date" json:"date"`
+	UpdateDate string        `bson:"update_date" json:"update_date"`
+}
+
+//Species representation on mongo
+type Species struct {
+	ID         bson.ObjectId `bson:"_id" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Meta       string        `bson:"meta" json:"meta"`
+	Date       string        `bson:"date" json:"date"`
+	UpdateDate string        `bson:"update_date" json:"update_date"`
 }
