@@ -745,3 +745,531 @@ func parametersType(w http.ResponseWriter, r *http.Request) {
 
 	Helpers.RespondWithJSON(w, http.StatusOK, x)
 }
+
+func administrationWayType(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	x := [7]string{"Oral", "Intravenosa", "Intramuscular", "Subcutanea", "tópica", "rectal", "inhalatoria"}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, x)
+}
+
+func presentationType(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	x := [7]string{"Jarabes", "Gotas", "Capsulas", "Polvo", "Granulado", "Emulsión", "Bebible"}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, x)
+}
+
+//-------------------------------------- Patient Review functions ----------------------------------
+
+func allPatientReviewEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-type", "application/json")
+
+	patientReviews, err := dao.FindAll("patientReviews")
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, patientReviews)
+}
+
+func createPatientReviewEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	err, patientReview := patientReviewValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	patientReview.ID = bson.NewObjectId()
+	patientReview.Date = time.Now().String()
+	patientReview.UpdateDate = time.Now().String()
+
+	if err := dao.Insert("patientReviews", patientReview, nil); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusCreated, patientReview)
+
+}
+
+func findPatientReviewEndpoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pet, err := dao.FindByID("patientReview", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, pet)
+
+}
+
+func removePatientReviewEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	err := dao.DeleteByID("patientReview", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
+
+}
+
+func updatePatientReviewEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	err, patientReview := patientReviewValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	prevData, err2 := dao.FindByID("patientReviews", params["id"])
+	if err2 != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+
+	parsedData := prevData.(bson.M)
+
+	patientReview.ID = parsedData["_id"].(bson.ObjectId)
+
+	patientReview.Date = parsedData["date"].(string)
+
+	patientReview.UpdateDate = time.Now().String()
+
+	if err := dao.Update("patientReviews", patientReview.ID, patientReview); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+
+}
+
+//--------------------------------physiological Constants functions ----------------------------------
+
+func allPhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-type", "application/json")
+
+	physiologicalConstant, err := dao.FindAll("physiologicalConstants")
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, physiologicalConstant)
+}
+
+func createPhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	err, physiologicalConstant := physiologicalConstantsValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	physiologicalConstant.ID = bson.NewObjectId()
+	physiologicalConstant.Date = time.Now().String()
+	physiologicalConstant.UpdateDate = time.Now().String()
+
+	if err := dao.Insert("physiologicalConstants", physiologicalConstant, nil); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusCreated, physiologicalConstant)
+
+}
+
+func findPhysiologicalConstantsEndpoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pet, err := dao.FindByID("physiologicalConstants", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, pet)
+
+}
+
+func removePhysiologicalConstantsEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	err := dao.DeleteByID("physiologicalConstants", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
+
+}
+
+func updatePhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	err, physiologicalConstant := physiologicalConstantsValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	prevData, err2 := dao.FindByID("physiologicalConstants", params["id"])
+	if err2 != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+
+	parsedData := prevData.(bson.M)
+
+	physiologicalConstant.ID = parsedData["_id"].(bson.ObjectId)
+
+	physiologicalConstant.Date = parsedData["date"].(string)
+
+	physiologicalConstant.UpdateDate = time.Now().String()
+
+	if err := dao.Update("physiologicalConstants", physiologicalConstant.ID, physiologicalConstant); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+
+}
+
+//--------------------------------Diagnostic Plans functions ----------------------------------
+
+func allDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-type", "application/json")
+
+	diagnosticPlan, err := dao.FindAll("DiagnosticPlans")
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, diagnosticPlan)
+}
+
+func createDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	err, diagnosticPlan := diagnosticPlansValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	diagnosticPlan.ID = bson.NewObjectId()
+	diagnosticPlan.Date = time.Now().String()
+	diagnosticPlan.UpdateDate = time.Now().String()
+
+	if err := dao.Insert("diagnosticPlans", diagnosticPlan, nil); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusCreated, diagnosticPlan)
+
+}
+
+func findDiagnosticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pet, err := dao.FindByID("diagnosticPlans", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, pet)
+
+}
+
+func removeDiagnosticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	err := dao.DeleteByID("diagnosticPlans", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
+
+}
+
+func updateDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	err, diagnosticPlan := diagnosticPlansValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	prevData, err2 := dao.FindByID("diagnosticPlans", params["id"])
+	if err2 != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+
+	parsedData := prevData.(bson.M)
+
+	diagnosticPlan.ID = parsedData["_id"].(bson.ObjectId)
+
+	diagnosticPlan.Date = parsedData["date"].(string)
+
+	diagnosticPlan.UpdateDate = time.Now().String()
+
+	if err := dao.Update("diagnosticPlans", diagnosticPlan.ID, diagnosticPlan); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+
+}
+
+//--------------------------------TerapeuticPlans functions ----------------------------------
+
+func allTerapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-type", "application/json")
+
+	diagnosticPlan, err := dao.FindAll("TerapeuticPlan")
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, diagnosticPlan)
+}
+
+func createTerapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	err, terapeuticPlan := terapeuticPlansValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	terapeuticPlan.ID = bson.NewObjectId()
+	terapeuticPlan.Date = time.Now().String()
+	terapeuticPlan.UpdateDate = time.Now().String()
+
+	if err := dao.Insert("terapeuticPlans", terapeuticPlan, nil); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusCreated, terapeuticPlan)
+
+}
+
+func findTerapeuticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pet, err := dao.FindByID("terapeuticPlans", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, pet)
+
+}
+
+func removeTerapeuticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	err := dao.DeleteByID("terapeuticPlans", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
+
+}
+
+func updateTerapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	err, terapeuticPlan := terapeuticPlansValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	prevData, err2 := dao.FindByID("diagnosticPlans", params["id"])
+	if err2 != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+
+	parsedData := prevData.(bson.M)
+
+	terapeuticPlan.ID = parsedData["_id"].(bson.ObjectId)
+
+	terapeuticPlan.Date = parsedData["date"].(string)
+
+	terapeuticPlan.UpdateDate = time.Now().String()
+
+	if err := dao.Update("terapeuticPlans", terapeuticPlan.ID, terapeuticPlan); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+
+}
+
+//--------------------------------Appointments functions ----------------------------------
+
+func allAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-type", "application/json")
+
+	diagnosticPlan, err := dao.FindAll("Appointments")
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, diagnosticPlan)
+}
+
+func createAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	w.Header().Set("Content-type", "application/json")
+
+	err, appointment := appointmentsValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	appointment.ID = bson.NewObjectId()
+	appointment.Date = time.Now().String()
+	appointment.UpdateDate = time.Now().String()
+
+	if err := dao.Insert("appointments", appointment, nil); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusCreated, appointment)
+
+}
+
+func findAppointmentsEndpoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pet, err := dao.FindByID("appointments", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, pet)
+
+}
+
+func removeAppointmentsEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	err := dao.DeleteByID("appointments", params["id"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
+
+}
+
+func updateAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	defer r.Body.Close()
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	err, appointment := appointmentsValidator(r)
+
+	if len(err["validationError"].(url.Values)) > 0 {
+		//fmt.Println(len(e))
+		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	prevData, err2 := dao.FindByID("appointments", params["id"])
+	if err2 != nil {
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		return
+	}
+
+	parsedData := prevData.(bson.M)
+
+	appointment.ID = parsedData["_id"].(bson.ObjectId)
+
+	appointment.Date = parsedData["date"].(string)
+
+	appointment.UpdateDate = time.Now().String()
+
+	if err := dao.Update("appointments", appointment.ID, appointment); err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+
+}

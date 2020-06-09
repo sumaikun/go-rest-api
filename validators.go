@@ -50,9 +50,11 @@ func productValidator(r *http.Request) (map[string]interface{}, Models.Product) 
 	var product Models.Product
 
 	rules := govalidator.MapData{
-		"name":        []string{"required"},
-		"value":       []string{"required", "numeric"},
-		"description": []string{"required"},
+		"name":              []string{"required"},
+		"value":             []string{"numeric"},
+		"description":       []string{"required"},
+		"presentation":      []string{"required", "presentationEnum"},
+		"administrationWay": []string{"required", "administrationWayEnum"},
 	}
 
 	opts := govalidator.Options{
@@ -237,4 +239,182 @@ func validatorSelectorUpdate(r *http.Request, entity string, prevData bson.M) (m
 
 	return err, nil, nil
 
+}
+
+///////////////////////////////////////////////////////////////////////
+
+func patientReviewValidator(r *http.Request) (map[string]interface{}, Models.PatientReview) {
+
+	var patientReview Models.PatientReview
+
+	rules := govalidator.MapData{
+		"patient":                []string{"string"},
+		"pvcVaccine":             []string{"bool"},
+		"pvcVaccineDate":         []string{"date"},
+		"tripleVaccine":          []string{"bool"},
+		"tripleVaccineDate":      []string{"date"},
+		"rabiesVaccine":          []string{"bool"},
+		"rabiesVaccineDate":      []string{"date"},
+		"desparasitationProduct": []string{"string"},
+		"lastDesparasitation":    []string{"string"},
+		"feedingType":            []string{"required", "string"},
+		"reproductiveState":      []string{"required", "string"},
+		"previousIllnesses":      []string{"required", "string"},
+		"surgeris":               []string{"required", "string"},
+		"familyBackground":       []string{"required", "string"},
+		"habitat":                []string{"required", "string"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &patientReview,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, patientReview
+}
+
+///////////////////////////////////////////////////////////////////////
+
+func physiologicalConstantsValidator(r *http.Request) (map[string]interface{}, Models.PhysiologicalConstants) {
+
+	var physiologicalConstants Models.PhysiologicalConstants
+
+	rules := govalidator.MapData{
+		"tlic":                          []string{"string"},
+		"heartRate":                     []string{"string"},
+		"respiratoryRate":               []string{"string"},
+		"HeartBeat":                     []string{"string"},
+		"temperature":                   []string{"string"},
+		"weight":                        []string{"string"},
+		"attitude":                      []string{"string"},
+		"bodyCondition":                 []string{"string"},
+		"hidrationStatus":               []string{"string"},
+		"conjuntivalMucosa":             []string{"string"},
+		"oralMucosa":                    []string{"string"},
+		"vulvallMucosa":                 []string{"string"},
+		"rectalMucosa":                  []string{"string"},
+		"physicalsEye":                  []string{"string"},
+		"physicalsEars":                 []string{"string"},
+		"physicalsLinfaticmodules":      []string{"string"},
+		"physicalsSkinandanexes":        []string{"string"},
+		"physicalsLocomotion":           []string{"string"},
+		"physicalsMusclesqueletal":      []string{"string"},
+		"physicalsNervoussystem":        []string{"string"},
+		"physicalsCardiovascularsystem": []string{"string"},
+		"physicalsRespiratorysystem":    []string{"string"},
+		"physicalsDigestivesystem":      []string{"string"},
+		"physicalsGenitourinarysystem":  []string{"string"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &physiologicalConstants,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, physiologicalConstants
+}
+
+///////////////////////////////////////////////////////////////////////
+
+func diagnosticPlansValidator(r *http.Request) (map[string]interface{}, Models.DiagnosticPlans) {
+
+	var diagnosticPlans Models.DiagnosticPlans
+
+	rules := govalidator.MapData{
+		"typeOfExam":   []string{"string"},
+		"description":  []string{"string"},
+		"realizedData": []string{"string"},
+		"laboratory":   []string{"string"},
+		"results":      []string{"string"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &diagnosticPlans,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, diagnosticPlans
+}
+
+//////////////////////////////////////////////////////////////////////
+
+func terapeuticPlansValidator(r *http.Request) (map[string]interface{}, Models.TerapeuticPlans) {
+
+	var terapeuticPlans Models.TerapeuticPlans
+
+	rules := govalidator.MapData{
+		"typeOfPlan":                  []string{"string"},
+		"activeSubstanceToAdminister": []string{"string"},
+		"posology":                    []string{"string"},
+		"totalDose":                   []string{"string"},
+		"frecuencyAndDuration":        []string{"string"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &terapeuticPlans,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, terapeuticPlans
+}
+
+//////////////////////////////////////////////////////////////////////
+
+func appointmentsValidator(r *http.Request) (map[string]interface{}, Models.Appointments) {
+
+	var appointments Models.Appointments
+
+	rules := govalidator.MapData{
+		"reasonForConsultation":  []string{"string"},
+		"resultsForConsultation": []string{"string"},
+		"relatedProcesses":       []string{"string"},
+		"product":                []string{"string"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &appointments,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, appointments
 }
