@@ -248,7 +248,7 @@ func patientReviewValidator(r *http.Request) (map[string]interface{}, Models.Pat
 	var patientReview Models.PatientReview
 
 	rules := govalidator.MapData{
-		"patient":                []string{"string"},
+		"patient":                []string{"required", "string"},
 		"pvcVaccine":             []string{"bool"},
 		"pvcVaccineDate":         []string{"date"},
 		"tripleVaccine":          []string{"bool"},
@@ -257,8 +257,8 @@ func patientReviewValidator(r *http.Request) (map[string]interface{}, Models.Pat
 		"rabiesVaccineDate":      []string{"date"},
 		"desparasitationProduct": []string{"string"},
 		"lastDesparasitation":    []string{"string"},
-		"feedingType":            []string{"required", "string"},
-		"reproductiveState":      []string{"required", "string"},
+		"feedingType":            []string{"required", "feedingTypeEnum"},
+		"reproductiveState":      []string{"required", "reproductiveStateEnum"},
 		"previousIllnesses":      []string{"required", "string"},
 		"surgeris":               []string{"required", "string"},
 		"familyBackground":       []string{"required", "string"},
@@ -294,9 +294,9 @@ func physiologicalConstantsValidator(r *http.Request) (map[string]interface{}, M
 		"HeartBeat":                     []string{"string"},
 		"temperature":                   []string{"string"},
 		"weight":                        []string{"string"},
-		"attitude":                      []string{"string"},
-		"bodyCondition":                 []string{"string"},
-		"hidrationStatus":               []string{"string"},
+		"attitude":                      []string{"attitudeEnum"},
+		"bodyCondition":                 []string{"bodyConditionEnum"},
+		"hidrationStatus":               []string{"hidrationStatusEnum"},
 		"conjuntivalMucosa":             []string{"string"},
 		"oralMucosa":                    []string{"string"},
 		"vulvallMucosa":                 []string{"string"},
@@ -337,11 +337,12 @@ func diagnosticPlansValidator(r *http.Request) (map[string]interface{}, Models.D
 	var diagnosticPlans Models.DiagnosticPlans
 
 	rules := govalidator.MapData{
-		"typeOfExam":   []string{"string"},
-		"description":  []string{"string"},
-		"realizedData": []string{"string"},
-		"laboratory":   []string{"string"},
-		"results":      []string{"string"},
+		"typeOfExam":        []string{"string"},
+		"description":       []string{"string"},
+		"examDate":          []string{"string"},
+		"laboratory":        []string{"string"},
+		"laboratoryAddress": []string{"string"},
+		"results":           []string{"string"},
 	}
 
 	opts := govalidator.Options{

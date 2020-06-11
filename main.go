@@ -108,6 +108,78 @@ func init() {
 		return nil
 	})
 
+	govalidator.AddCustomRule("feedingTypeEnum", func(field string, rule string, message string, value interface{}) error {
+
+		x := []string{"Balanceada", "Casera", "Mixta"}
+
+		val := Helpers.Contains(x, value.(string))
+
+		if val != true {
+			return fmt.Errorf("The %s field must be a valid value for feedingType Enum", field)
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("reproductiveStateEnum", func(field string, rule string, message string, value interface{}) error {
+
+		x := []string{"Castrado", "Gestacion", "Entero", "Lactancia"}
+
+		val := Helpers.Contains(x, value.(string))
+
+		if val != true {
+			return fmt.Errorf("The %s field must be a valid value for reproductiveState Enum", field)
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("habitatEnum", func(field string, rule string, message string, value interface{}) error {
+
+		x := []string{"Casa", "Lote", "Finca", "Taller", "Apartamento"}
+
+		val := Helpers.Contains(x, value.(string))
+
+		if val != true {
+			return fmt.Errorf("The %s field must be a valid value for reproductiveState Enum", field)
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("attitudeEnum", func(field string, rule string, message string, value interface{}) error {
+
+		x := []string{"Astenico", "Apopletico", "Linfatico"}
+
+		val := Helpers.Contains(x, value.(string))
+
+		if val != true {
+			return fmt.Errorf("The %s field must be a valid value for reproductiveState Enum", field)
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("bodyConditionEnum", func(field string, rule string, message string, value interface{}) error {
+
+		x := []string{"Caquetico", "Delgado", "Normal", "Obeso", "Sobrepeso"}
+
+		val := Helpers.Contains(x, value.(string))
+
+		if val != true {
+			return fmt.Errorf("The %s field must be a valid value for reproductiveState Enum", field)
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("hidrationStatusEnum", func(field string, rule string, message string, value interface{}) error {
+
+		x := []string{"Normal", "0-5%", "6-7%", "8-9%", "+10%"}
+
+		val := Helpers.Contains(x, value.(string))
+
+		if val != true {
+			return fmt.Errorf("The %s field must be a valid value for reproductiveState Enum", field)
+		}
+		return nil
+	})
+
 }
 
 func main() {
@@ -176,43 +248,43 @@ func main() {
 
 	/* patientReviews */
 
-	router.Handle("/patientReviews", middleware.AuthMiddleware(http.HandlerFunc(createPatientReviewEndPoint))).Methods("POST")
+	router.Handle("/patientReviews", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createPatientReviewEndPoint)))).Methods("POST")
 	router.Handle("/patientReviews", middleware.AuthMiddleware(http.HandlerFunc(allPatientReviewEndPoint))).Methods("GET")
 	router.Handle("/patientReviews/{id}", middleware.AuthMiddleware(http.HandlerFunc(findPatientReviewEndpoint))).Methods("GET")
 	router.Handle("/patientReviews/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePatientReviewEndpoint))).Methods("DELETE")
-	router.Handle("/patientReviews/{id}", middleware.AuthMiddleware(http.HandlerFunc(updatePatientReviewEndPoint))).Methods("PUT")
+	router.Handle("/patientReviews/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePatientReviewEndPoint)))).Methods("PUT")
 
 	/* physiological Constants */
 
-	router.Handle("/physiologicalConstants ", middleware.AuthMiddleware(http.HandlerFunc(createPhysiologicalConstantsEndPoint))).Methods("POST")
+	router.Handle("/physiologicalConstants ", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createPhysiologicalConstantsEndPoint)))).Methods("POST")
 	router.Handle("/physiologicalConstants", middleware.AuthMiddleware(http.HandlerFunc(allPhysiologicalConstantsEndPoint))).Methods("GET")
 	router.Handle("/physiologicalConstants/{id}", middleware.AuthMiddleware(http.HandlerFunc(findPhysiologicalConstantsEndpoint))).Methods("GET")
 	router.Handle("/physiologicalConstants/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePhysiologicalConstantsEndpoint))).Methods("DELETE")
-	router.Handle("/physiologicalConstants/{id}", middleware.AuthMiddleware(http.HandlerFunc(updatePhysiologicalConstantsEndPoint))).Methods("PUT")
+	router.Handle("/physiologicalConstants/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePhysiologicalConstantsEndPoint)))).Methods("PUT")
 
 	/*  diagnostic Plan */
 
-	router.Handle("/diagnosticPlans", middleware.AuthMiddleware(http.HandlerFunc(createDiagnosticPlansEndPoint))).Methods("POST")
+	router.Handle("/diagnosticPlans", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createDiagnosticPlansEndPoint)))).Methods("POST")
 	router.Handle("/diagnosticPlans", middleware.AuthMiddleware(http.HandlerFunc(allDiagnosticPlansEndPoint))).Methods("GET")
 	router.Handle("/diagnosticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(findDiagnosticPlansEndpoint))).Methods("GET")
 	router.Handle("/diagnosticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeDiagnosticPlansEndpoint))).Methods("DELETE")
-	router.Handle("/diagnosticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateDiagnosticPlansEndPoint))).Methods("PUT")
+	router.Handle("/diagnosticPlans/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateDiagnosticPlansEndPoint)))).Methods("PUT")
 
 	/* terapeutic Plan */
 
-	router.Handle("/terapeuticPlans", middleware.AuthMiddleware(http.HandlerFunc(createTerapeuticPlansEndPoint))).Methods("POST")
+	router.Handle("/terapeuticPlans", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createTerapeuticPlansEndPoint)))).Methods("POST")
 	router.Handle("/terapeuticPlans", middleware.AuthMiddleware(http.HandlerFunc(allTerapeuticPlansEndPoint))).Methods("GET")
 	router.Handle("/terapeuticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(findTerapeuticPlansEndpoint))).Methods("GET")
 	router.Handle("/terapeuticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeTerapeuticPlansEndpoint))).Methods("DELETE")
-	router.Handle("/terapeuticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateTerapeuticPlansEndPoint))).Methods("PUT")
+	router.Handle("/terapeuticPlans/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateTerapeuticPlansEndPoint)))).Methods("PUT")
 
 	/* appointment */
 
-	router.Handle("/appointments", middleware.AuthMiddleware(http.HandlerFunc(createAppointmentsEndPoint))).Methods("POST")
+	router.Handle("/appointments", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createAppointmentsEndPoint)))).Methods("POST")
 	router.Handle("/appointments", middleware.AuthMiddleware(http.HandlerFunc(allAppointmentsEndPoint))).Methods("GET")
 	router.Handle("/appointments/{id}", middleware.AuthMiddleware(http.HandlerFunc(findAppointmentsEndpoint))).Methods("GET")
 	router.Handle("/appointments/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeAppointmentsEndpoint))).Methods("DELETE")
-	router.Handle("/appointments/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateAppointmentsEndPoint))).Methods("PUT")
+	router.Handle("/appointments/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateAppointmentsEndPoint)))).Methods("PUT")
 
 	log.Fatal(http.ListenAndServe(":"+port, &CORSRouterDecorator{router}))
 }

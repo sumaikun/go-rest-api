@@ -141,22 +141,23 @@ type PhysiologicalConstants struct {
 
 //DiagnosticPlans representation on mongo
 type DiagnosticPlans struct {
-	ID           bson.ObjectId `bson:"_id" json:"id"`
-	TypeOfExam   string        `bson:"typeOfExam" json:"typeOfExam"`
-	Descrjption  string        `bson:"description" json:"description"`
-	RealizedData string        `bson:"realizedData" json:"realizedData"`
-	Laboratory   string        `bson:"laboratory" json:"laboratory"`
-	Results      string        `bson:"results" json:"results"`
-	CreatedBy    string        `bson:"createdBy" json:"createdBy"`
-	UpdatedBy    string        `bson:"updatedBy" json:"updatedBy"`
-	Date         string        `bson:"date" json:"date"`
-	UpdateDate   string        `bson:"update_date" json:"update_date"`
+	ID                bson.ObjectId `bson:"_id" json:"id"`
+	TypeOfExam        string        `bson:"typeOfExam" json:"typeOfExam"`
+	Description       string        `bson:"description" json:"description"`
+	ExamDate          string        `bson:"examDate" json:"examDate"`
+	Laboratory        string        `bson:"laboratory" json:"laboratory"`
+	LaboratoryAddress string        `bson:"laboratoryAddress" json:"laboratoryAddress"`
+	Results           string        `bson:"results" json:"results"`
+	CreatedBy         string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy         string        `bson:"updatedBy" json:"updatedBy"`
+	Date              string        `bson:"date" json:"date"`
+	UpdateDate        string        `bson:"update_date" json:"update_date"`
 }
 
 //TerapeuticPlans representation on mongo
 type TerapeuticPlans struct {
 	ID                          bson.ObjectId `bson:"_id" json:"id"`
-	TypeOfPlsn                  string        `bson:"typeOfPlan" json:"typeOfPlan"`
+	TypeOfPlan                  string        `bson:"typeOfPlan" json:"typeOfPlan"`
 	ActiveSubstanceToAdminister string        `bson:"activeSubstanceToAdminister " json:"activeSubstanceToAdminister "`
 	Posology                    string        `bson:"posology" json:"posology"`
 	TotalDose                   string        `bson:"totalDose" json:"totalDose"`
@@ -172,7 +173,6 @@ type Appointments struct {
 	ID                     bson.ObjectId `bson:"_id" json:"id"`
 	ReasonForConsultation  string        `bson:"reasonForConsultation" json:"reasonForConsultation"`
 	ResultsForConsultation string        `bson:"resultsForConsultation" json:"resultsForConsultation"`
-	RelatedProcesses       string        `bson:"relatedProcesses" json:"relatedProcesses"`
 	Product                string        `bson:"product" json:"product"`
 	CreatedBy              string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy              string        `bson:"updatedBy" json:"updatedBy"`

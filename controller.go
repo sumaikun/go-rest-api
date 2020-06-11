@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
 
@@ -741,7 +742,7 @@ func parametersType(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	w.Header().Set("Content-type", "application/json")
 
-	x := [2]string{"Especie", "Raza"}
+	x := [3]string{"Especie", "Raza", "Tipo de examen"}
 
 	Helpers.RespondWithJSON(w, http.StatusOK, x)
 }
@@ -781,7 +782,12 @@ func allPatientReviewEndPoint(w http.ResponseWriter, r *http.Request) {
 
 func createPatientReviewEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
+
 	w.Header().Set("Content-type", "application/json")
 
 	err, patientReview := patientReviewValidator(r)
@@ -795,6 +801,7 @@ func createPatientReviewEndPoint(w http.ResponseWriter, r *http.Request) {
 	patientReview.ID = bson.NewObjectId()
 	patientReview.Date = time.Now().String()
 	patientReview.UpdateDate = time.Now().String()
+	patientReview.CreatedBy = userParsed["_id"].(string)
 
 	if err := dao.Insert("patientReviews", patientReview, nil); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
@@ -830,6 +837,10 @@ func removePatientReviewEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func updatePatientReviewEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
 	params := mux.Vars(r)
 
@@ -857,6 +868,8 @@ func updatePatientReviewEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	patientReview.UpdateDate = time.Now().String()
 
+	patientReview.UpdateDate = userParsed["_id"].(string)
+
 	if err := dao.Update("patientReviews", patientReview.ID, patientReview); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -883,6 +896,10 @@ func allPhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 func createPhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
 	w.Header().Set("Content-type", "application/json")
 
@@ -897,6 +914,7 @@ func createPhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request
 	physiologicalConstant.ID = bson.NewObjectId()
 	physiologicalConstant.Date = time.Now().String()
 	physiologicalConstant.UpdateDate = time.Now().String()
+	physiologicalConstant.CreatedBy = userParsed["_id"].(string)
 
 	if err := dao.Insert("physiologicalConstants", physiologicalConstant, nil); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
@@ -932,6 +950,10 @@ func removePhysiologicalConstantsEndpoint(w http.ResponseWriter, r *http.Request
 
 func updatePhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
 	params := mux.Vars(r)
 
@@ -959,6 +981,8 @@ func updatePhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request
 
 	physiologicalConstant.UpdateDate = time.Now().String()
 
+	physiologicalConstant.UpdatedBy = userParsed["_id"].(string)
+
 	if err := dao.Update("physiologicalConstants", physiologicalConstant.ID, physiologicalConstant); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -985,6 +1009,10 @@ func allDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 
 func createDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
 	w.Header().Set("Content-type", "application/json")
 
@@ -999,6 +1027,7 @@ func createDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 	diagnosticPlan.ID = bson.NewObjectId()
 	diagnosticPlan.Date = time.Now().String()
 	diagnosticPlan.UpdateDate = time.Now().String()
+	diagnosticPlan.CreatedBy = userParsed["_id"].(string)
 
 	if err := dao.Insert("diagnosticPlans", diagnosticPlan, nil); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
@@ -1034,6 +1063,10 @@ func removeDiagnosticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func updateDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
 	params := mux.Vars(r)
 
@@ -1061,6 +1094,8 @@ func updateDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	diagnosticPlan.UpdateDate = time.Now().String()
 
+	diagnosticPlan.UpdatedBy = userParsed["_id"].(string)
+
 	if err := dao.Update("diagnosticPlans", diagnosticPlan.ID, diagnosticPlan); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -1087,6 +1122,10 @@ func allTerapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 
 func createTerapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
 	w.Header().Set("Content-type", "application/json")
 
@@ -1101,6 +1140,7 @@ func createTerapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 	terapeuticPlan.ID = bson.NewObjectId()
 	terapeuticPlan.Date = time.Now().String()
 	terapeuticPlan.UpdateDate = time.Now().String()
+	terapeuticPlan.CreatedBy = userParsed["_id"].(string)
 
 	if err := dao.Insert("terapeuticPlans", terapeuticPlan, nil); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
@@ -1136,6 +1176,10 @@ func removeTerapeuticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func updateTerapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
 	params := mux.Vars(r)
 
@@ -1163,6 +1207,8 @@ func updateTerapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	terapeuticPlan.UpdateDate = time.Now().String()
 
+	terapeuticPlan.UpdatedBy = userParsed["_id"].(string)
+
 	if err := dao.Update("terapeuticPlans", terapeuticPlan.ID, terapeuticPlan); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -1189,6 +1235,10 @@ func allAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 func createAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
 	w.Header().Set("Content-type", "application/json")
 
@@ -1203,6 +1253,7 @@ func createAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 	appointment.ID = bson.NewObjectId()
 	appointment.Date = time.Now().String()
 	appointment.UpdateDate = time.Now().String()
+	appointment.CreatedBy = userParsed["_id"].(string)
 
 	if err := dao.Insert("appointments", appointment, nil); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
@@ -1238,6 +1289,10 @@ func removeAppointmentsEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func updateAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
 	defer r.Body.Close()
 	params := mux.Vars(r)
 
@@ -1264,6 +1319,8 @@ func updateAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 	appointment.Date = parsedData["date"].(string)
 
 	appointment.UpdateDate = time.Now().String()
+
+	appointment.UpdatedBy = userParsed["_id"].(string)
 
 	if err := dao.Update("appointments", appointment.ID, appointment); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
