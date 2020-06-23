@@ -233,6 +233,27 @@ func main() {
 	router.Handle("/species/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
 	router.Handle("/species/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateParameterEndPoint))).Methods("PUT")
 
+	/* Examtypes Routes */
+	router.Handle("/examTypes", middleware.AuthMiddleware(http.HandlerFunc(createParameterEndPoint))).Methods("POST")
+	router.Handle("/examTypes", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
+	router.Handle("/examTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
+	router.Handle("/examTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
+	router.Handle("/examTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateParameterEndPoint))).Methods("PUT")
+
+	/* Plantypes Routes */
+	router.Handle("/planTypes", middleware.AuthMiddleware(http.HandlerFunc(createParameterEndPoint))).Methods("POST")
+	router.Handle("/planTypes", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
+	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
+	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
+	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateParameterEndPoint))).Methods("PUT")
+
+	/* Diseases Routes */
+	router.Handle("/diseases", middleware.AuthMiddleware(http.HandlerFunc(createParameterEndPoint))).Methods("POST")
+	router.Handle("/diseases", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
+	router.Handle("/diseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
+	router.Handle("/diseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
+	router.Handle("/diseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateParameterEndPoint))).Methods("PUT")
+
 	/* fileUpload */
 
 	router.Handle("/fileUpload", middleware.AuthMiddleware(http.HandlerFunc(fileUpload))).Methods("POST")
@@ -285,6 +306,14 @@ func main() {
 	router.Handle("/appointments/{id}", middleware.AuthMiddleware(http.HandlerFunc(findAppointmentsEndpoint))).Methods("GET")
 	router.Handle("/appointments/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeAppointmentsEndpoint))).Methods("DELETE")
 	router.Handle("/appointments/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateAppointmentsEndPoint)))).Methods("PUT")
+
+	/* agendaAnnotations */
+
+	router.Handle("/agendaAnnotations", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createAgendaAnnotationEndPoint)))).Methods("POST")
+	router.Handle("/agendaAnnotations", middleware.AuthMiddleware(http.HandlerFunc(allAgendaAnnotationsEndPoint))).Methods("GET")
+	router.Handle("/agendaAnnotations/{id}", middleware.AuthMiddleware(http.HandlerFunc(findAgendaAnnotationEndpoint))).Methods("GET")
+	router.Handle("/agendaAnnotations/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeAgendaAnnotationEndpoint))).Methods("DELETE")
+	router.Handle("/agendaAnnotations/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateAgendaAnnotationEndPoint)))).Methods("PUT")
 
 	log.Fatal(http.ListenAndServe(":"+port, &CORSRouterDecorator{router}))
 }

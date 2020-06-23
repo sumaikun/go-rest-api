@@ -82,6 +82,33 @@ type Species struct {
 	UpdateDate string        `bson:"update_date" json:"update_date"`
 }
 
+//ExamTypes representation on mongo
+type ExamTypes struct {
+	ID         bson.ObjectId `bson:"_id" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Meta       string        `bson:"meta" json:"meta"`
+	Date       string        `bson:"date" json:"date"`
+	UpdateDate string        `bson:"update_date" json:"update_date"`
+}
+
+//PlanTypes representation on mongo
+type PlanTypes struct {
+	ID         bson.ObjectId `bson:"_id" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Meta       string        `bson:"meta" json:"meta"`
+	Date       string        `bson:"date" json:"date"`
+	UpdateDate string        `bson:"update_date" json:"update_date"`
+}
+
+//Diseases representation on mongo
+type Diseases struct {
+	ID         bson.ObjectId `bson:"_id" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Meta       string        `bson:"meta" json:"meta"`
+	Date       string        `bson:"date" json:"date"`
+	UpdateDate string        `bson:"update_date" json:"update_date"`
+}
+
 //PatientReview representation on mongo
 type PatientReview struct {
 	ID                     bson.ObjectId `bson:"_id" json:"id"`
@@ -109,6 +136,7 @@ type PatientReview struct {
 //PhysiologicalConstants representation on mongo
 type PhysiologicalConstants struct {
 	ID                            bson.ObjectId `bson:"_id" json:"id"`
+	Patient                       string        `bson:"patient" json:"patient"`
 	TLIC                          string        `bson:"tlic" json:"tlic"`
 	HeartRate                     string        `bson:"heartRate" json:"heartRate"`
 	RespiratoryRate               string        `bson:"respiratoryRate" json:"respiratoryRate"`
@@ -142,6 +170,7 @@ type PhysiologicalConstants struct {
 //DiagnosticPlans representation on mongo
 type DiagnosticPlans struct {
 	ID                bson.ObjectId `bson:"_id" json:"id"`
+	Patient           string        `bson:"patient" json:"patient"`
 	TypeOfExam        string        `bson:"typeOfExam" json:"typeOfExam"`
 	Description       string        `bson:"description" json:"description"`
 	ExamDate          string        `bson:"examDate" json:"examDate"`
@@ -157,6 +186,7 @@ type DiagnosticPlans struct {
 //TerapeuticPlans representation on mongo
 type TerapeuticPlans struct {
 	ID                          bson.ObjectId `bson:"_id" json:"id"`
+	Patient                     string        `bson:"patient" json:"patient"`
 	TypeOfPlan                  string        `bson:"typeOfPlan" json:"typeOfPlan"`
 	ActiveSubstanceToAdminister string        `bson:"activeSubstanceToAdminister " json:"activeSubstanceToAdminister "`
 	Posology                    string        `bson:"posology" json:"posology"`
@@ -171,11 +201,49 @@ type TerapeuticPlans struct {
 //Appointments representation on mongo
 type Appointments struct {
 	ID                     bson.ObjectId `bson:"_id" json:"id"`
+	Patient                string        `bson:"patient" json:"patient"`
 	ReasonForConsultation  string        `bson:"reasonForConsultation" json:"reasonForConsultation"`
 	ResultsForConsultation string        `bson:"resultsForConsultation" json:"resultsForConsultation"`
-	Product                string        `bson:"product" json:"product"`
+	State                  string        `bson:"state" json:"state"`
 	CreatedBy              string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy              string        `bson:"updatedBy" json:"updatedBy"`
 	Date                   string        `bson:"date" json:"date"`
 	UpdateDate             string        `bson:"update_date" json:"update_date"`
+}
+
+//DetectedDeseases  representation on mongo
+type DetectedDeseases struct {
+	ID           bson.ObjectId `bson:"_id" json:"id"`
+	Patient      string        `bson:"patient" json:"patient"`
+	Disease      string        `bson:"disease" json:"disease"`
+	Criteria     string        `bson:"criteria" json:"criteria"`
+	Observations string        `bson:"observations" json:"observations"`
+	CreatedBy    string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy    string        `bson:"updatedBy" json:"updatedBy"`
+	Date         string        `bson:"date" json:"date"`
+	UpdateDate   string        `bson:"update_date" json:"update_date"`
+}
+
+//PatientFiles  representation on mongo
+type PatientFiles struct {
+	ID          bson.ObjectId `bson:"_id" json:"id"`
+	Patient     string        `bson:"patient" json:"patient"`
+	FilePath    string        `bson:"filePath" json:"filePath"`
+	Description string        `bson:"description" json:"description"`
+	CreatedBy   string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy   string        `bson:"updatedBy" json:"updatedBy"`
+	Date        string        `bson:"date" json:"date"`
+	UpdateDate  string        `bson:"update_date" json:"update_date"`
+}
+
+//AgendaAnnotation  representation on mongo
+type AgendaAnnotation struct {
+	ID               bson.ObjectId `bson:"_id" json:"id"`
+	AnnotationDate   string        `bson:"annotationDate" json:"annotationDate"`
+	AnnotationToDate string        `bson:"annotationToDate" json:"annotationToDate"`
+	Description      string        `bson:"description" json:"description"`
+	CreatedBy        string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy        string        `bson:"updatedBy" json:"updatedBy"`
+	Date             string        `bson:"date" json:"date"`
+	UpdateDate       string        `bson:"update_date" json:"update_date"`
 }
