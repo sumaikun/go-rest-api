@@ -31,6 +31,13 @@ func (mongo *MongoConnector) FindAll(collection string) ([]interface{}, error) {
 	return data, err
 }
 
+//FindManyByKey from repository
+func (mongo *MongoConnector) FindManyByKey(collection string, key string, value string) ([]interface{}, error) {
+	var data []interface{}
+	err := db.C(collection).Find(bson.M{key: value}).All(&data)
+	return data, err
+}
+
 //Insert into repository
 func (mongo *MongoConnector) Insert(collection string, data interface{}, uniqueKeys []string) error {
 

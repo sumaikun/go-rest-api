@@ -382,21 +382,19 @@ func patientReviewValidator(r *http.Request) (map[string]interface{}, Models.Pat
 	var patientReview Models.PatientReview
 
 	rules := govalidator.MapData{
-		"patient":                []string{"required", "string"},
-		"pvcVaccine":             []string{"bool"},
-		"pvcVaccineDate":         []string{"date"},
-		"tripleVaccine":          []string{"bool"},
-		"tripleVaccineDate":      []string{"date"},
-		"rabiesVaccine":          []string{"bool"},
-		"rabiesVaccineDate":      []string{"date"},
-		"desparasitationProduct": []string{"string"},
-		"lastDesparasitation":    []string{"string"},
-		"feedingType":            []string{"required", "feedingTypeEnum"},
-		"reproductiveState":      []string{"required", "reproductiveStateEnum"},
-		"previousIllnesses":      []string{"required", "string"},
-		"surgeris":               []string{"required", "string"},
-		"familyBackground":       []string{"required", "string"},
-		"habitat":                []string{"required", "string"},
+		"patient":           []string{"required"},
+		"pvcVaccine":        []string{"bool"},
+		"pvcVaccineDate":    []string{"date"},
+		"tripleVaccine":     []string{"bool"},
+		"tripleVaccineDate": []string{"date"},
+		"rabiesVaccine":     []string{"bool"},
+		"rabiesVaccineDate": []string{"date"},
+		"feedingType":       []string{"required", "feedingTypeEnum"},
+		"reproductiveState": []string{"required", "reproductiveStateEnum"},
+		"previousIllnesses": []string{"required"},
+		"surgeris":          []string{"required"},
+		"familyBackground":  []string{"required"},
+		"habitat":           []string{"required"},
 	}
 
 	opts := govalidator.Options{
@@ -422,31 +420,16 @@ func physiologicalConstantsValidator(r *http.Request) (map[string]interface{}, M
 	var physiologicalConstants Models.PhysiologicalConstants
 
 	rules := govalidator.MapData{
-		"patient":                       []string{"string"},
-		"tlic":                          []string{"string"},
-		"heartRate":                     []string{"string"},
-		"respiratoryRate":               []string{"string"},
-		"HeartBeat":                     []string{"string"},
-		"temperature":                   []string{"string"},
-		"weight":                        []string{"string"},
-		"attitude":                      []string{"attitudeEnum"},
-		"bodyCondition":                 []string{"bodyConditionEnum"},
-		"hidrationStatus":               []string{"hidrationStatusEnum"},
-		"conjuntivalMucosa":             []string{"string"},
-		"oralMucosa":                    []string{"string"},
-		"vulvallMucosa":                 []string{"string"},
-		"rectalMucosa":                  []string{"string"},
-		"physicalsEye":                  []string{"string"},
-		"physicalsEars":                 []string{"string"},
-		"physicalsLinfaticmodules":      []string{"string"},
-		"physicalsSkinandanexes":        []string{"string"},
-		"physicalsLocomotion":           []string{"string"},
-		"physicalsMusclesqueletal":      []string{"string"},
-		"physicalsNervoussystem":        []string{"string"},
-		"physicalsCardiovascularsystem": []string{"string"},
-		"physicalsRespiratorysystem":    []string{"string"},
-		"physicalsDigestivesystem":      []string{"string"},
-		"physicalsGenitourinarysystem":  []string{"string"},
+		"patient":         []string{"required"},
+		"tlic":            []string{"required"},
+		"heartRate":       []string{"required"},
+		"respiratoryRate": []string{"required"},
+		"heartBeat":       []string{"required"},
+		"temperature":     []string{"required"},
+		"weight":          []string{"required"},
+		"attitude":        []string{"required", "attitudeEnum"},
+		"bodyCondition":   []string{"required", "bodyConditionEnum"},
+		"hidrationStatus": []string{"required", "hidrationStatusEnum"},
 	}
 
 	opts := govalidator.Options{
@@ -472,13 +455,13 @@ func diagnosticPlansValidator(r *http.Request) (map[string]interface{}, Models.D
 	var diagnosticPlans Models.DiagnosticPlans
 
 	rules := govalidator.MapData{
-		"patient":           []string{"string"},
-		"typeOfExam":        []string{"string"},
-		"description":       []string{"string"},
-		"examDate":          []string{"string"},
-		"laboratory":        []string{"string"},
-		"laboratoryAddress": []string{"string"},
-		"results":           []string{"string"},
+		"patient":           []string{"required"},
+		"typeOfExam":        []string{"required"},
+		"description":       []string{"required"},
+		"examDate":          []string{"required"},
+		"laboratory":        []string{"required"},
+		"laboratoryAddress": []string{"required"},
+		//"results":           []string{"required"},
 	}
 
 	opts := govalidator.Options{
@@ -499,22 +482,22 @@ func diagnosticPlansValidator(r *http.Request) (map[string]interface{}, Models.D
 
 //////////////////////////////////////////////////////////////////////
 
-func terapeuticPlansValidator(r *http.Request) (map[string]interface{}, Models.TerapeuticPlans) {
+func therapeuticPlansValidator(r *http.Request) (map[string]interface{}, Models.TherapeuticPlans) {
 
-	var terapeuticPlans Models.TerapeuticPlans
+	var therapeuticPlans Models.TherapeuticPlans
 
 	rules := govalidator.MapData{
-		"patient":                     []string{"string"},
-		"typeOfPlan":                  []string{"string"},
-		"activeSubstanceToAdminister": []string{"string"},
-		"posology":                    []string{"string"},
-		"totalDose":                   []string{"string"},
-		"frecuencyAndDuration":        []string{"string"},
+		"patient":                     []string{"required"},
+		"typeOfPlan":                  []string{"required"},
+		"activeSubstanceToAdminister": []string{"required"},
+		"posology":                    []string{"required"},
+		"totalDose":                   []string{"required"},
+		"frecuencyAndDuration":        []string{"required"},
 	}
 
 	opts := govalidator.Options{
 		Request:         r,
-		Data:            &terapeuticPlans,
+		Data:            &therapeuticPlans,
 		Rules:           rules,
 		RequiredDefault: true,
 	}
@@ -525,7 +508,7 @@ func terapeuticPlansValidator(r *http.Request) (map[string]interface{}, Models.T
 
 	err := map[string]interface{}{"validationError": e}
 
-	return err, terapeuticPlans
+	return err, therapeuticPlans
 }
 
 //////////////////////////////////////////////////////////////////////

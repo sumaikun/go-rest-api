@@ -115,8 +115,8 @@ type PatientReview struct {
 	Patient                string        `bson:"patient" json:"patient"`
 	PvcVaccine             bool          `bson:"pvcVaccine" json:"pvcVaccine"`
 	PvcVaccineDate         string        `bson:"pvcVaccineDate" json:"pvcVaccineDate"`
-	TripleVaccine          bool          `bson:"tipleVaccine" json:"tripleVaccine"`
-	TripleVaccineDate      string        `bson:"tipleVaccineDate" json:"tripleVaccineDate"`
+	TripleVaccine          bool          `bson:"tripleVaccine" json:"tripleVaccine"`
+	TripleVaccineDate      string        `bson:"tripleVaccineDate" json:"tripleVaccineDate"`
 	RabiesVaccine          bool          `bson:"rabiesVaccine" json:"rabiesVaccine"`
 	RabiesVaccineDate      string        `bson:"rabiesVaccineDate" json:"rabiesVaccineDate"`
 	DesparasitationProduct string        `bson:"desparasitationProduct" json:"desparasitationProduct"`
@@ -140,7 +140,7 @@ type PhysiologicalConstants struct {
 	TLIC                          string        `bson:"tlic" json:"tlic"`
 	HeartRate                     string        `bson:"heartRate" json:"heartRate"`
 	RespiratoryRate               string        `bson:"respiratoryRate" json:"respiratoryRate"`
-	HeartBeat                     string        `bson:"HeartBeat" json:"HeartBeat"`
+	HeartBeat                     string        `bson:"heartBeat" json:"heartBeat"`
 	Temperature                   string        `bson:"temperature" json:"temperature"`
 	Weight                        string        `bson:"weight" json:"weight"`
 	Attitude                      string        `bson:"attitude" json:"attitude"`
@@ -148,7 +148,7 @@ type PhysiologicalConstants struct {
 	HidrationStatus               string        `bson:"hidrationStatus" json:"hidrationStatus"`
 	ConjuntivalMucosa             string        `bson:"conjuntivalMucosa" json:"conjuntivalMucosa"`
 	OralMucosa                    string        `bson:"oralMucosa" json:"oralMucosa"`
-	VulvalMucosa                  string        `bson:"vulvalMucosa" json:"vulvallMucosa"`
+	VulvalMucosa                  string        `bson:"vulvalMucosa" json:"vulvalMucosa"`
 	RectalMucosa                  string        `bson:"rectalMucosa" json:"rectalMucosa"`
 	PhysicalsEye                  string        `bson:"physicalsEye" json:"physicalsEye"`
 	PhysicalsEars                 string        `bson:"physicalsEars" json:"physicalsEars"`
@@ -183,8 +183,8 @@ type DiagnosticPlans struct {
 	UpdateDate        string        `bson:"update_date" json:"update_date"`
 }
 
-//TerapeuticPlans representation on mongo
-type TerapeuticPlans struct {
+//TherapeuticPlans representation on mongo
+type TherapeuticPlans struct {
 	ID                          bson.ObjectId `bson:"_id" json:"id"`
 	Patient                     string        `bson:"patient" json:"patient"`
 	TypeOfPlan                  string        `bson:"typeOfPlan" json:"typeOfPlan"`
