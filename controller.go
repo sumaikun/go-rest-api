@@ -834,7 +834,7 @@ func findPatientReviewEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	pet, err := dao.FindByID("patientReview", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Patient Review ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, pet)
@@ -846,7 +846,7 @@ func removePatientReviewEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	err := dao.DeleteByID("patientReview", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Patient Review ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, nil)
@@ -874,7 +874,7 @@ func updatePatientReviewEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	prevData, err2 := dao.FindByID("patientReviews", params["id"])
 	if err2 != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Patient Review ID")
 		return
 	}
 
@@ -963,7 +963,7 @@ func findPhysiologicalConstantsEndpoint(w http.ResponseWriter, r *http.Request) 
 	params := mux.Vars(r)
 	pet, err := dao.FindByID("physiologicalConstants", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Constant ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, pet)
@@ -975,7 +975,7 @@ func removePhysiologicalConstantsEndpoint(w http.ResponseWriter, r *http.Request
 	params := mux.Vars(r)
 	err := dao.DeleteByID("physiologicalConstants", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Constant ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, nil)
@@ -1003,7 +1003,7 @@ func updatePhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request
 
 	prevData, err2 := dao.FindByID("physiologicalConstants", params["id"])
 	if err2 != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Constant ID")
 		return
 	}
 
@@ -1092,7 +1092,7 @@ func findDiagnosticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	pet, err := dao.FindByID("diagnosticPlans", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Diagnostic Plan ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, pet)
@@ -1104,7 +1104,7 @@ func removeDiagnosticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	err := dao.DeleteByID("diagnosticPlans", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Diagnostic Plan ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, nil)
@@ -1132,7 +1132,7 @@ func updateDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	prevData, err2 := dao.FindByID("diagnosticPlans", params["id"])
 	if err2 != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Diagnostic Plan ID")
 		return
 	}
 
@@ -1221,7 +1221,7 @@ func findTherapeuticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	pet, err := dao.FindByID("therapeuticPlans", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Therapuetic Plan ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, pet)
@@ -1233,7 +1233,7 @@ func removeTherapeuticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	err := dao.DeleteByID("therapeuticPlans", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Therapuetic Plan ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, nil)
@@ -1259,9 +1259,9 @@ func updateTherapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	prevData, err2 := dao.FindByID("diagnosticPlans", params["id"])
+	prevData, err2 := dao.FindByID("therapeuticPlans", params["id"])
 	if err2 != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Therapuetic Plan ID")
 		return
 	}
 
@@ -1334,7 +1334,7 @@ func findAppointmentsEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	pet, err := dao.FindByID("appointments", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Appointment ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, pet)
@@ -1346,7 +1346,7 @@ func removeAppointmentsEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	err := dao.DeleteByID("appointments", params["id"])
 	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Appointment ID")
 		return
 	}
 	Helpers.RespondWithJSON(w, http.StatusOK, nil)
@@ -1374,7 +1374,7 @@ func updateAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	prevData, err2 := dao.FindByID("appointments", params["id"])
 	if err2 != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Pet ID")
+		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Appointment ID")
 		return
 	}
 

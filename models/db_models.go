@@ -188,7 +188,7 @@ type TherapeuticPlans struct {
 	ID                          bson.ObjectId `bson:"_id" json:"id"`
 	Patient                     string        `bson:"patient" json:"patient"`
 	TypeOfPlan                  string        `bson:"typeOfPlan" json:"typeOfPlan"`
-	ActiveSubstanceToAdminister string        `bson:"activeSubstanceToAdminister " json:"activeSubstanceToAdminister "`
+	ActiveSubstanceToAdminister string        `bson:"activeSubstanceToAdminister" json:"activeSubstanceToAdminister"`
 	Posology                    string        `bson:"posology" json:"posology"`
 	TotalDose                   string        `bson:"totalDose" json:"totalDose"`
 	FrecuencyAndDuration        string        `bson:"frecuencyAndDuration" json:"frecuencyAndDuration"`
