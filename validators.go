@@ -518,11 +518,9 @@ func appointmentsValidator(r *http.Request) (map[string]interface{}, Models.Appo
 	var appointments Models.Appointments
 
 	rules := govalidator.MapData{
-		"patient":                []string{"string"},
-		"reasonForConsultation":  []string{"string"},
+		"patient":                []string{"required"},
+		"reasonForConsultation":  []string{"required"},
 		"resultsForConsultation": []string{"string"},
-		"relatedProcesses":       []string{"string"},
-		"product":                []string{"string"},
 	}
 
 	opts := govalidator.Options{
@@ -548,10 +546,9 @@ func detectedDeseasesValidator(r *http.Request) (map[string]interface{}, Models.
 	var detectedDesease Models.DetectedDeseases
 
 	rules := govalidator.MapData{
-		"patient":      []string{"required", "string"},
-		"disease":      []string{"required", "string"},
-		"criteria":     []string{"required", "string"},
-		"observations": []string{"string"},
+		"patient":  []string{"required"},
+		"disease":  []string{"required"},
+		"criteria": []string{"required"},
 	}
 
 	opts := govalidator.Options{
@@ -577,9 +574,9 @@ func patientsFilesValidator(r *http.Request) (map[string]interface{}, Models.Pat
 	var patientFile Models.PatientFiles
 
 	rules := govalidator.MapData{
-		"patient":     []string{"required", "string"},
-		"filePath":    []string{"required", "string"},
-		"description": []string{"required", "string"},
+		"patient":     []string{"required"},
+		"filePath":    []string{"required"},
+		"description": []string{"required"},
 	}
 
 	opts := govalidator.Options{
@@ -605,9 +602,9 @@ func agendaAnnotationValidator(r *http.Request) (map[string]interface{}, Models.
 	var agendaAnnotation Models.AgendaAnnotation
 
 	rules := govalidator.MapData{
-		"annotationDate":   []string{"required", "string"},
-		"annotationToDate": []string{"required", "string"},
-		"description":      []string{"required", "string"},
+		"annotationDate":   []string{"required"},
+		"annotationToDate": []string{"required"},
+		"description":      []string{"required"},
 	}
 
 	opts := govalidator.Options{
