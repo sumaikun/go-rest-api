@@ -12,6 +12,8 @@ type User struct {
 	Role       string        `bson:"role" json:"role"`
 	Phone      string        `bson:"phone" json:"phone"`
 	Picture    string        `bson:"picture" json:"picture"`
+	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
 	Date       string        `bson:"date" json:"date"`
 	UpdateDate string        `bson:"update_date" json:"update_date"`
 }
@@ -23,10 +25,12 @@ type Product struct {
 	Value             string        `bson:"value" json:"value"`
 	Description       string        `bson:"description" json:"description"`
 	Picture           string        `bson:"picture" json:"picture"`
-	Date              string        `bson:"date" json:"date"`
-	UpdateDate        string        `bson:"update_date" json:"update_date"`
 	AdministrationWay string        `bson:"administrationWay" json:"administrationWay"`
 	Presentation      string        `bson:"presentation" json:"presentation"`
+	Date              string        `bson:"date" json:"date"`
+	UpdateDate        string        `bson:"update_date" json:"update_date"`
+	CreatedBy         string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy         string        `bson:"updatedBy" json:"updatedBy"`
 }
 
 //Contact representation on mongo
@@ -42,6 +46,8 @@ type Contact struct {
 	Ocupation      string        `bson:"ocupation" json:"ocupation"`
 	Email          string        `bson:"email" json:"email"`
 	Picture        string        `bson:"picture" json:"picture"`
+	CreatedBy      string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy      string        `bson:"updatedBy" json:"updatedBy"`
 	Date           string        `bson:"date" json:"date"`
 	UpdateDate     string        `bson:"update_date" json:"update_date"`
 }
@@ -59,6 +65,8 @@ type Pet struct {
 	Origin      string        `bson:"origin" json:"origin"`
 	Description string        `bson:"description" json:"description"`
 	Picture     string        `bson:"picture" json:"picture"`
+	CreatedBy   string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy   string        `bson:"updatedBy" json:"updatedBy"`
 	Date        string        `bson:"date" json:"date"`
 	UpdateDate  string        `bson:"update_date" json:"update_date"`
 }
@@ -69,6 +77,8 @@ type Breeds struct {
 	Name       string        `bson:"name" json:"name"`
 	Species    string        `bson:"species" json:"species"`
 	Meta       string        `bson:"meta" json:"meta"`
+	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
 	Date       string        `bson:"date" json:"date"`
 	UpdateDate string        `bson:"update_date" json:"update_date"`
 }
@@ -78,6 +88,8 @@ type Species struct {
 	ID         bson.ObjectId `bson:"_id" json:"id"`
 	Name       string        `bson:"name" json:"name"`
 	Meta       string        `bson:"meta" json:"meta"`
+	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
 	Date       string        `bson:"date" json:"date"`
 	UpdateDate string        `bson:"update_date" json:"update_date"`
 }
@@ -87,6 +99,8 @@ type ExamTypes struct {
 	ID         bson.ObjectId `bson:"_id" json:"id"`
 	Name       string        `bson:"name" json:"name"`
 	Meta       string        `bson:"meta" json:"meta"`
+	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
 	Date       string        `bson:"date" json:"date"`
 	UpdateDate string        `bson:"update_date" json:"update_date"`
 }
@@ -96,6 +110,8 @@ type PlanTypes struct {
 	ID         bson.ObjectId `bson:"_id" json:"id"`
 	Name       string        `bson:"name" json:"name"`
 	Meta       string        `bson:"meta" json:"meta"`
+	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
 	Date       string        `bson:"date" json:"date"`
 	UpdateDate string        `bson:"update_date" json:"update_date"`
 }
@@ -105,6 +121,8 @@ type Diseases struct {
 	ID         bson.ObjectId `bson:"_id" json:"id"`
 	Name       string        `bson:"name" json:"name"`
 	Meta       string        `bson:"meta" json:"meta"`
+	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
 	Date       string        `bson:"date" json:"date"`
 	UpdateDate string        `bson:"update_date" json:"update_date"`
 }

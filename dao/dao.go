@@ -31,6 +31,44 @@ func (mongo *MongoConnector) FindAll(collection string) ([]interface{}, error) {
 	return data, err
 }
 
+//FindAllWithUsers from repository
+func (mongo *MongoConnector) FindAllWithUsers(collection string) ([]interface{}, error) {
+
+	var data []interface{}
+
+	/*query := []bson.M{{
+	"$lookup": bson.M{
+		"let":  bson.M{"userObjId": bson.M{"$toObjectId": "$createdBy"}},
+		"from": "users",
+		"pipeline": []bson.M{{
+			"$match": bson.M{"$expr": bson.M{"$eq":[]string{"$_id","$$userObjId"}}},
+		}},
+		"as": "userDetails",
+	}}}*/
+
+	query := []bson.M{{
+		"$lookup": bson.M{
+			"let":  bson.M{"userObjId": "$createdBy"},
+			"from": "users",
+			"pipeline": []bson.M{{
+				"$match": bson.M{"$expr": bson.M{"$eq": []interface{}{bson.M{"$toString": "$_id"}, "$$userObjId"}}},
+			}},
+			"as": "userDetails",
+		}}, {
+		"$project": bson.M{
+			"userDetails._id":         0,
+			"userDetails.role":        0,
+			"userDetails.password":    0,
+			"userDetails.date":        0,
+			"userDetails.update_date": 0,
+		},
+	}}
+
+	err := db.C(collection).Pipe(query).All(&data)
+
+	return data, err
+}
+
 //FindManyByKey from repository
 func (mongo *MongoConnector) FindManyByKey(collection string, key string, value string) ([]interface{}, error) {
 	var data []interface{}

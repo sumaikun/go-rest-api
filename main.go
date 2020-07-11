@@ -192,67 +192,67 @@ func main() {
 	router.Handle("/exampleHandler", middleware.AuthMiddleware(http.HandlerFunc(exampleHandler))).Methods("GET")
 
 	/* Users Routes */
-	router.Handle("/users", middleware.AuthMiddleware(http.HandlerFunc(createUsersEndPoint))).Methods("POST")
+	router.Handle("/users", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createUsersEndPoint)))).Methods("POST")
 	router.Handle("/users", middleware.AuthMiddleware(http.HandlerFunc(allUsersEndPoint))).Methods("GET")
 	router.Handle("/users/{id}", middleware.AuthMiddleware(http.HandlerFunc(findUserEndpoint))).Methods("GET")
 	router.Handle("/users/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeUserEndpoint))).Methods("DELETE")
-	router.Handle("/users/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateUserEndPoint))).Methods("PUT")
+	router.Handle("/users/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateUserEndPoint)))).Methods("PUT")
 
 	/* Products Routes */
-	router.Handle("/products", middleware.AuthMiddleware(http.HandlerFunc(createProductEndPoint))).Methods("POST")
+	router.Handle("/products", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createProductEndPoint)))).Methods("POST")
 	router.Handle("/products", middleware.AuthMiddleware(http.HandlerFunc(allProductsEndPoint))).Methods("GET")
 	router.Handle("/products/{id}", middleware.AuthMiddleware(http.HandlerFunc(findProductEndpoint))).Methods("GET")
 	router.Handle("/products/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeProductEndpoint))).Methods("DELETE")
-	router.Handle("/products/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateProductEndPoint))).Methods("PUT")
+	router.Handle("/products/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateProductEndPoint)))).Methods("PUT")
 
 	/* Contacts Routes */
-	router.Handle("/contacts", middleware.AuthMiddleware(http.HandlerFunc(createContactEndPoint))).Methods("POST")
+	router.Handle("/contacts", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createContactEndPoint)))).Methods("POST")
 	router.Handle("/contacts", middleware.AuthMiddleware(http.HandlerFunc(allContactsEndPoint))).Methods("GET")
 	router.Handle("/contacts/{id}", middleware.AuthMiddleware(http.HandlerFunc(findContactEndpoint))).Methods("GET")
 	router.Handle("/contacts/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeContactEndpoint))).Methods("DELETE")
-	router.Handle("/contacts/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateContactEndPoint))).Methods("PUT")
+	router.Handle("/contacts/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateContactEndPoint)))).Methods("PUT")
 
 	/* Pets Routes */
-	router.Handle("/pets", middleware.AuthMiddleware(http.HandlerFunc(createPetEndPoint))).Methods("POST")
+	router.Handle("/pets", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createPetEndPoint)))).Methods("POST")
 	router.Handle("/pets", middleware.AuthMiddleware(http.HandlerFunc(allPetsEndPoint))).Methods("GET")
 	router.Handle("/pets/{id}", middleware.AuthMiddleware(http.HandlerFunc(findPetEndpoint))).Methods("GET")
 	router.Handle("/pets/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePetEndpoint))).Methods("DELETE")
-	router.Handle("/pets/{id}", middleware.AuthMiddleware(http.HandlerFunc(updatePetEndPoint))).Methods("PUT")
+	router.Handle("/pets/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePetEndPoint)))).Methods("PUT")
 
 	/* Breeds Routes */
-	router.Handle("/breeds", middleware.AuthMiddleware(http.HandlerFunc(createParameterEndPoint))).Methods("POST")
+	router.Handle("/breeds", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
 	router.Handle("/breeds", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
 	router.Handle("/breeds/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
 	router.Handle("/breeds/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
-	router.Handle("/breeds/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateParameterEndPoint))).Methods("PUT")
+	router.Handle("/breeds/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
 
 	/* Species Routes */
-	router.Handle("/species", middleware.AuthMiddleware(http.HandlerFunc(createParameterEndPoint))).Methods("POST")
+	router.Handle("/species", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
 	router.Handle("/species", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
 	router.Handle("/species/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
 	router.Handle("/species/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
-	router.Handle("/species/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateParameterEndPoint))).Methods("PUT")
+	router.Handle("/species/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
 
 	/* Examtypes Routes */
-	router.Handle("/examTypes", middleware.AuthMiddleware(http.HandlerFunc(createParameterEndPoint))).Methods("POST")
+	router.Handle("/examTypes", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
 	router.Handle("/examTypes", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
 	router.Handle("/examTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
 	router.Handle("/examTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
-	router.Handle("/examTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateParameterEndPoint))).Methods("PUT")
+	router.Handle("/examTypes/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
 
 	/* Plantypes Routes */
-	router.Handle("/planTypes", middleware.AuthMiddleware(http.HandlerFunc(createParameterEndPoint))).Methods("POST")
+	router.Handle("/planTypes", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
 	router.Handle("/planTypes", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
 	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
 	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
-	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateParameterEndPoint))).Methods("PUT")
+	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
 
 	/* Diseases Routes */
-	router.Handle("/diseases", middleware.AuthMiddleware(http.HandlerFunc(createParameterEndPoint))).Methods("POST")
+	router.Handle("/diseases", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
 	router.Handle("/diseases", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
 	router.Handle("/diseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
 	router.Handle("/diseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
-	router.Handle("/diseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(updateParameterEndPoint))).Methods("PUT")
+	router.Handle("/diseases/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
 
 	/* fileUpload */
 
