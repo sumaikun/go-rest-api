@@ -518,9 +518,8 @@ func appointmentsValidator(r *http.Request) (map[string]interface{}, Models.Appo
 	var appointments Models.Appointments
 
 	rules := govalidator.MapData{
-		"patient":                []string{"required"},
-		"reasonForConsultation":  []string{"required"},
-		"resultsForConsultation": []string{"string"},
+		"patient":               []string{"required"},
+		"reasonForConsultation": []string{"required"},
 	}
 
 	opts := govalidator.Options{

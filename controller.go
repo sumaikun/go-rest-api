@@ -1368,6 +1368,22 @@ func allAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 	Helpers.RespondWithJSON(w, http.StatusOK, diagnosticPlan)
 }
 
+func findAppointmentsByPatientEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	appointments, err := dao.FindManyByKey("appointments", "patient", params["patient"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, appointments)
+
+}
+
 func createAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	user := context.Get(r, "user")
