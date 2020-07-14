@@ -540,9 +540,9 @@ func appointmentsValidator(r *http.Request) (map[string]interface{}, Models.Appo
 
 //////////////////////////////////////////////////////////////////////
 
-func detectedDeseasesValidator(r *http.Request) (map[string]interface{}, Models.DetectedDeseases) {
+func detectedDiseasesValidator(r *http.Request) (map[string]interface{}, Models.DetectedDiseases) {
 
-	var detectedDesease Models.DetectedDeseases
+	var detectedDisease Models.DetectedDiseases
 
 	rules := govalidator.MapData{
 		"patient":  []string{"required"},
@@ -552,7 +552,7 @@ func detectedDeseasesValidator(r *http.Request) (map[string]interface{}, Models.
 
 	opts := govalidator.Options{
 		Request:         r,
-		Data:            &detectedDesease,
+		Data:            &detectedDisease,
 		Rules:           rules,
 		RequiredDefault: true,
 	}
@@ -563,7 +563,7 @@ func detectedDeseasesValidator(r *http.Request) (map[string]interface{}, Models.
 
 	err := map[string]interface{}{"validationError": e}
 
-	return err, detectedDesease
+	return err, detectedDisease
 }
 
 //////////////////////////////////////////////////////////////////////

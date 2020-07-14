@@ -229,8 +229,8 @@ type Appointments struct {
 	UpdateDate             string        `bson:"update_date" json:"update_date"`
 }
 
-//DetectedDeseases  representation on mongo
-type DetectedDeseases struct {
+//DetectedDiseases  representation on mongo
+type DetectedDiseases struct {
 	ID           bson.ObjectId `bson:"_id" json:"id"`
 	Patient      string        `bson:"patient" json:"patient"`
 	Disease      string        `bson:"disease" json:"disease"`
