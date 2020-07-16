@@ -53,18 +53,16 @@ func authentication(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
-		} else {
-
-			match := Helpers.CheckPasswordHash(creds.Password, user.(bson.M)["password"].(string))
-
-			if !match {
-				w.WriteHeader(http.StatusUnauthorized)
-				return
-			}
-
-			response.User = user.(bson.M)
-
 		}
+
+		match := Helpers.CheckPasswordHash(creds.Password, user.(bson.M)["password"].(string))
+
+		if !match {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		response.User = user.(bson.M)
 
 	}
 
@@ -220,7 +218,11 @@ func updateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	user.UpdateDate = time.Now().String()
 
-	user.CreatedBy = parsedData["createdBy"].(string)
+	if parsedData["createdBy"] == nil {
+		user.CreatedBy = userParsed["_id"].(bson.ObjectId).Hex()
+	} else {
+		user.CreatedBy = parsedData["createdBy"].(string)
+	}
 
 	user.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 
@@ -343,7 +345,11 @@ func updateProductEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	product.UpdateDate = time.Now().String()
 
-	product.CreatedBy = parsedData["createdBy"].(string)
+	if parsedData["createdBy"] == nil {
+		product.CreatedBy = userParsed["_id"].(bson.ObjectId).Hex()
+	} else {
+		product.CreatedBy = parsedData["createdBy"].(string)
+	}
 
 	product.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 
@@ -460,7 +466,11 @@ func updateContactEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	contact.UpdateDate = time.Now().String()
 
-	contact.CreatedBy = parsedData["createdBy"].(string)
+	if parsedData["createdBy"] == nil {
+		contact.CreatedBy = userParsed["_id"].(bson.ObjectId).Hex()
+	} else {
+		contact.CreatedBy = parsedData["createdBy"].(string)
+	}
 
 	contact.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 
@@ -576,7 +586,11 @@ func updatePetEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	pet.UpdateDate = time.Now().String()
 
-	pet.CreatedBy = parsedData["createdBy"].(string)
+	if parsedData["createdBy"] == nil {
+		pet.CreatedBy = userParsed["_id"].(bson.ObjectId).Hex()
+	} else {
+		pet.CreatedBy = parsedData["createdBy"].(string)
+	}
 
 	pet.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 
@@ -740,6 +754,23 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 	tempFile.Write(fileBytes)
 
 	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"filename": tempName})
+
+}
+
+func deleteImage(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	var fileName = params["file"]
+
+	var err = os.Remove("./files/" + fileName)
+	if err != nil {
+		//log.Fatal(err) // perhaps handle this nicer
+		Helpers.RespondWithJSON(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"status": "fileDelete"})
+	return
 
 }
 
