@@ -273,7 +273,7 @@ func main() {
 	router.Handle("/patientReviews", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createPatientReviewEndPoint)))).Methods("POST")
 	router.Handle("/patientReviews", middleware.AuthMiddleware(http.HandlerFunc(allPatientReviewEndPoint))).Methods("GET")
 	router.Handle("/patientReviews/{patient}", middleware.AuthMiddleware(http.HandlerFunc(findPatientReviewByPatientEndpoint))).Methods("GET")
-	//router.Handle("/patientReviews/{id}", middleware.AuthMiddleware(http.HandlerFunc(findPatientReviewEndpoint))).Methods("GET")
+	router.Handle("/patientReview/{id}", middleware.AuthMiddleware(http.HandlerFunc(findPatientReviewEndpoint))).Methods("GET")
 	router.Handle("/patientReviews/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePatientReviewEndpoint))).Methods("DELETE")
 	router.Handle("/patientReviews/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePatientReviewEndPoint)))).Methods("PUT")
 
@@ -282,7 +282,7 @@ func main() {
 	router.Handle("/physiologicalConstants", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createPhysiologicalConstantsEndPoint)))).Methods("POST")
 	router.Handle("/physiologicalConstants", middleware.AuthMiddleware(http.HandlerFunc(allPhysiologicalConstantsEndPoint))).Methods("GET")
 	router.Handle("/physiologicalConstants/{patient}", middleware.AuthMiddleware(http.HandlerFunc(findPhysiologicalConstantsByPatientEndpoint))).Methods("GET")
-	//router.Handle("/physiologicalConstants/{id}", middleware.AuthMiddleware(http.HandlerFunc(findPhysiologicalConstantsEndpoint))).Methods("GET")
+	router.Handle("/physiologicalConstant/{id}", middleware.AuthMiddleware(http.HandlerFunc(findPhysiologicalConstantsEndpoint))).Methods("GET")
 	router.Handle("/physiologicalConstants/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePhysiologicalConstantsEndpoint))).Methods("DELETE")
 	router.Handle("/physiologicalConstants/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePhysiologicalConstantsEndPoint)))).Methods("PUT")
 
@@ -291,7 +291,7 @@ func main() {
 	router.Handle("/diagnosticPlans", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createDiagnosticPlansEndPoint)))).Methods("POST")
 	router.Handle("/diagnosticPlans", middleware.AuthMiddleware(http.HandlerFunc(allDiagnosticPlansEndPoint))).Methods("GET")
 	router.Handle("/diagnosticPlans/{patient}", middleware.AuthMiddleware(http.HandlerFunc(findDiagnosticPlansByPatientEndpoint))).Methods("GET")
-	//router.Handle("/diagnosticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(findDiagnosticPlansEndpoint))).Methods("GET")
+	router.Handle("/diagnosticPlan/{id}", middleware.AuthMiddleware(http.HandlerFunc(findDiagnosticPlansEndpoint))).Methods("GET")
 	router.Handle("/diagnosticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeDiagnosticPlansEndpoint))).Methods("DELETE")
 	router.Handle("/diagnosticPlans/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateDiagnosticPlansEndPoint)))).Methods("PUT")
 
@@ -300,7 +300,7 @@ func main() {
 	router.Handle("/therapeuticPlans", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createTherapeuticPlansEndPoint)))).Methods("POST")
 	router.Handle("/therapeuticPlans", middleware.AuthMiddleware(http.HandlerFunc(allTherapeuticPlansEndPoint))).Methods("GET")
 	router.Handle("/therapeuticPlans/{patient}", middleware.AuthMiddleware(http.HandlerFunc(findTherapeuticPlansByPatientEndpoint))).Methods("GET")
-	//router.Handle("/therapeuticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(findTherapeuticPlansEndpoint))).Methods("GET")
+	router.Handle("/therapeuticPlan/{id}", middleware.AuthMiddleware(http.HandlerFunc(findTherapeuticPlansEndpoint))).Methods("GET")
 	router.Handle("/therapeuticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeTherapeuticPlansEndpoint))).Methods("DELETE")
 	router.Handle("/therapeuticPlans/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateTherapeuticPlansEndPoint)))).Methods("PUT")
 
@@ -309,7 +309,7 @@ func main() {
 	router.Handle("/appointments", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createAppointmentsEndPoint)))).Methods("POST")
 	router.Handle("/appointments", middleware.AuthMiddleware(http.HandlerFunc(allAppointmentsEndPoint))).Methods("GET")
 	router.Handle("/appointments/{patient}", middleware.AuthMiddleware(http.HandlerFunc(findAppointmentsByPatientEndpoint))).Methods("GET")
-	//router.Handle("/appointments/{id}", middleware.AuthMiddleware(http.HandlerFunc(findAppointmentsEndpoint))).Methods("GET")
+	router.Handle("/appointment/{id}", middleware.AuthMiddleware(http.HandlerFunc(findAppointmentsEndpoint))).Methods("GET")
 	router.Handle("/appointments/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeAppointmentsEndpoint))).Methods("DELETE")
 	router.Handle("/appointments/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateAppointmentsEndPoint)))).Methods("PUT")
 
@@ -318,9 +318,18 @@ func main() {
 	router.Handle("/detectedDiseases", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createDetectedDiseaseEndPoint)))).Methods("POST")
 	router.Handle("/detectedDiseases", middleware.AuthMiddleware(http.HandlerFunc(allDetectedDiseasesEndPoint))).Methods("GET")
 	router.Handle("/detectedDiseases/{patient}", middleware.AuthMiddleware(http.HandlerFunc(findDetectedDiseasesByPatientEndpoint))).Methods("GET")
-	//router.Handle("/detectedDiseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(findDetectedDiseaseEndpoint))).Methods("GET")
+	router.Handle("/detectedDisease/{id}", middleware.AuthMiddleware(http.HandlerFunc(findDetectedDiseaseEndpoint))).Methods("GET")
 	router.Handle("/detectedDiseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeDetectedDiseaseEndpoint))).Methods("DELETE")
 	router.Handle("/detectedDiseases/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateDetectedDiseaseEndPoint)))).Methods("PUT")
+
+	/* patientFiles */
+
+	router.Handle("/patientFiles", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createPatientFilesEndPoint)))).Methods("POST")
+	router.Handle("/patientFiles", middleware.AuthMiddleware(http.HandlerFunc(allPatientFilesEndPoint))).Methods("GET")
+	router.Handle("/patientFiles/{patient}", middleware.AuthMiddleware(http.HandlerFunc(findPatientFilesByPatientEndpoint))).Methods("GET")
+	router.Handle("/patientFile/{id}", middleware.AuthMiddleware(http.HandlerFunc(findPatientFilesEndpoint))).Methods("GET")
+	router.Handle("/patientFiles/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePatientFilesEndpoint))).Methods("DELETE")
+	router.Handle("/patientFiles/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePatientFilesEndPoint)))).Methods("PUT")
 
 	/* agendaAnnotations */
 

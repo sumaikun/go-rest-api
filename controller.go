@@ -1650,7 +1650,7 @@ func updateDetectedDiseaseEndPoint(w http.ResponseWriter, r *http.Request) {
 
 //-------------------------------- PatientFiles functions ----------------------------------
 
-func allPatientsFilesEndPoint(w http.ResponseWriter, r *http.Request) {
+func allPatientFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 
@@ -1663,7 +1663,23 @@ func allPatientsFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 	Helpers.RespondWithJSON(w, http.StatusOK, patientFiles)
 }
 
-func createPatientsFilesEndPoint(w http.ResponseWriter, r *http.Request) {
+func findPatientFilesByPatientEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	patientFiles, err := dao.FindManyByKey("patientFiles", "patient", params["patient"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, patientFiles)
+
+}
+
+func createPatientFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	user := context.Get(r, "user")
 
@@ -1695,7 +1711,7 @@ func createPatientsFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func findPatientsFilesEndpoint(w http.ResponseWriter, r *http.Request) {
+func findPatientFilesEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	pet, err := dao.FindByID("patientsFiles", params["id"])
 	if err != nil {
@@ -1706,7 +1722,7 @@ func findPatientsFilesEndpoint(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func removePatientsFilesEndpoint(w http.ResponseWriter, r *http.Request) {
+func removePatientFilesEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 	err := dao.DeleteByID("patientsFiles", params["id"])
@@ -1718,7 +1734,7 @@ func removePatientsFilesEndpoint(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func updatePatientsFilesEndPoint(w http.ResponseWriter, r *http.Request) {
+func updatePatientFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	user := context.Get(r, "user")
 
