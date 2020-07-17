@@ -246,6 +246,7 @@ type DetectedDiseases struct {
 type PatientFiles struct {
 	ID          bson.ObjectId `bson:"_id" json:"id"`
 	Patient     string        `bson:"patient" json:"patient"`
+	Name        string        `bson:"name" json:"name"`
 	FilePath    string        `bson:"filePath" json:"filePath"`
 	Description string        `bson:"description" json:"description"`
 	CreatedBy   string        `bson:"createdBy" json:"createdBy"`

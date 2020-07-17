@@ -739,7 +739,13 @@ func fileUpload(w http.ResponseWriter, r *http.Request) {
 		Helpers.RespondWithJSON(w, http.StatusInternalServerError, err)
 	}
 
-	var tempName = strings.Trim(tempFile.Name(), "files/")
+	var tempPath = tempFile.Name()
+
+	fmt.Println("temp file before trim" + tempPath)
+
+	var tempName = strings.Replace(tempPath, "files/", "", -1)
+
+	fmt.Println("tempName " + tempName)
 
 	defer tempFile.Close()
 
@@ -795,6 +801,59 @@ func serveImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/jpeg") // <-- set the content-type header
 	io.Copy(w, img)
 
+}
+
+func downloadFile(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	var fileName = params["file"]
+
+	/*fmt.Println("fileName " + fileName)
+
+	download, err := os.Open("./files/upload-815043770.pdf")
+
+	if err != nil {
+
+		Helpers.RespondWithJSON(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	defer download.Close()
+
+	contentType, err := getFileContentType(download)
+
+	if err != nil {
+		Helpers.RespondWithJSON(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	fmt.Println("detected contentType", contentType)
+
+	w.Header().Set("Content-Type", "application/pdf")
+
+	w.Header().Set("Content-Disposition: attachment", "filename=test.pdf")
+
+	_, err = io.Copy(w, download)*/
+
+	http.ServeFile(w, r, "./files/"+fileName)
+}
+
+func getFileContentType(out *os.File) (string, error) {
+
+	// Only the first 512 bytes are used to sniff the content type.
+	buffer := make([]byte, 512)
+
+	_, err := out.Read(buffer)
+	if err != nil {
+		return "", err
+	}
+
+	// Use the net/http package's handy DectectContentType function. Always returns a valid
+	// content-type by returning "application/octet-stream" if no others seemed to match.
+	contentType := http.DetectContentType(buffer)
+
+	return contentType, nil
 }
 
 // Enums --------------------------------------------------------------------
@@ -1669,6 +1728,8 @@ func findPatientFilesByPatientEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 
+	//fmt.Println("patient log" + params["patient"])
+
 	patientFiles, err := dao.FindManyByKey("patientFiles", "patient", params["patient"])
 	if err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
@@ -1702,7 +1763,7 @@ func createPatientFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 	patientsFiles.CreatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 	patientsFiles.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 
-	if err := dao.Insert("detectedDiseases", patientsFiles, nil); err != nil {
+	if err := dao.Insert("patientFiles", patientsFiles, nil); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -1713,7 +1774,7 @@ func createPatientFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 
 func findPatientFilesEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	pet, err := dao.FindByID("patientsFiles", params["id"])
+	pet, err := dao.FindByID("patientFiles", params["id"])
 	if err != nil {
 		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid PatientsFile ID")
 		return
@@ -1725,7 +1786,7 @@ func findPatientFilesEndpoint(w http.ResponseWriter, r *http.Request) {
 func removePatientFilesEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
-	err := dao.DeleteByID("patientsFiles", params["id"])
+	err := dao.DeleteByID("patientFiles", params["id"])
 	if err != nil {
 		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid PatientsFile ID")
 		return
@@ -1735,6 +1796,8 @@ func removePatientFilesEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func updatePatientFilesEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("update log")
 
 	user := context.Get(r, "user")
 
@@ -1753,7 +1816,7 @@ func updatePatientFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	prevData, err2 := dao.FindByID("patientsFiles", params["id"])
+	prevData, err2 := dao.FindByID("patientFiles", params["id"])
 	if err2 != nil {
 		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Patients File ID")
 		return
@@ -1771,7 +1834,7 @@ func updatePatientFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	patientsFiles.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 
-	if err := dao.Update("patientsFiles", patientsFiles.ID, patientsFiles); err != nil {
+	if err := dao.Update("patientFiles", patientsFiles.ID, patientsFiles); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
