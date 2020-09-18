@@ -268,6 +268,7 @@ func main() {
 	router.Handle("/parametersType", middleware.AuthMiddleware(http.HandlerFunc(parametersType))).Methods("GET")
 	router.Handle("/administrationWays", middleware.AuthMiddleware(http.HandlerFunc(administrationWayType))).Methods("GET")
 	router.Handle("/presentations", middleware.AuthMiddleware(http.HandlerFunc(presentationType))).Methods("GET")
+	router.Handle("/userStates", middleware.AuthMiddleware(http.HandlerFunc(stateType))).Methods("GET")
 
 	/* patientReviews */
 
@@ -336,7 +337,8 @@ func main() {
 
 	router.Handle("/agendaAnnotations", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createAgendaAnnotationEndPoint)))).Methods("POST")
 	router.Handle("/agendaAnnotations", middleware.AuthMiddleware(http.HandlerFunc(allAgendaAnnotationsEndPoint))).Methods("GET")
-	router.Handle("/agendaAnnotations/{id}", middleware.AuthMiddleware(http.HandlerFunc(findAgendaAnnotationEndpoint))).Methods("GET")
+	router.Handle("/agendaAnnotations/{patient}", middleware.AuthMiddleware(http.HandlerFunc(findPatientFilesByPatientEndpoint))).Methods("GET")
+	router.Handle("/agendaAnnotation/{id}", middleware.AuthMiddleware(http.HandlerFunc(findAgendaAnnotationEndpoint))).Methods("GET")
 	router.Handle("/agendaAnnotations/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeAgendaAnnotationEndpoint))).Methods("DELETE")
 	router.Handle("/agendaAnnotations/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateAgendaAnnotationEndPoint)))).Methods("PUT")
 

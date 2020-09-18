@@ -222,6 +222,7 @@ type Appointments struct {
 	Patient                string        `bson:"patient" json:"patient"`
 	ReasonForConsultation  string        `bson:"reasonForConsultation" json:"reasonForConsultation"`
 	ResultsForConsultation string        `bson:"resultsForConsultation" json:"resultsForConsultation"`
+	AppointmentDate        string        `bson:"appointmentDate" json:"appointmentDate"`
 	State                  string        `bson:"state" json:"state"`
 	CreatedBy              string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy              string        `bson:"updatedBy" json:"updatedBy"`
@@ -260,7 +261,9 @@ type AgendaAnnotation struct {
 	ID               bson.ObjectId `bson:"_id" json:"id"`
 	AnnotationDate   string        `bson:"annotationDate" json:"annotationDate"`
 	AnnotationToDate string        `bson:"annotationToDate" json:"annotationToDate"`
+	Title            string        `bson:"title" json:"title"`
 	Description      string        `bson:"description" json:"description"`
+	Patient          string        `bson:"patient" json:"patient"`
 	CreatedBy        string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy        string        `bson:"updatedBy" json:"updatedBy"`
 	Date             string        `bson:"date" json:"date"`

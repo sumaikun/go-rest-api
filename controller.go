@@ -1449,7 +1449,7 @@ func allAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 
-	diagnosticPlan, err := dao.FindAll("appointments")
+	diagnosticPlan, err := dao.FindAllWithPatients("appointments")
 	if err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -1713,7 +1713,7 @@ func allPatientFilesEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 
-	patientFiles, err := dao.FindAll("patientFiles")
+	patientFiles, err := dao.FindAllWithPatients("patientFiles")
 	if err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -1849,13 +1849,31 @@ func allAgendaAnnotationsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 
-	agendaAnnotations, err := dao.FindAll("agendaAnnotations")
+	agendaAnnotations, err := dao.FindAllWithPatients("agendaAnnotations")
 	if err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	Helpers.RespondWithJSON(w, http.StatusOK, agendaAnnotations)
+}
+
+func findAgendaAnnotationsByPatientEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	w.Header().Set("Content-type", "application/json")
+
+	//fmt.Println("patient log" + params["patient"])
+
+	agendaAnnotations, err := dao.FindManyByKey("agendaAnnotations", "patient", params["patient"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, agendaAnnotations)
+
 }
 
 func createAgendaAnnotationEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -1915,6 +1933,8 @@ func removeAgendaAnnotationEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func updateAgendaAnnotationEndPoint(w http.ResponseWriter, r *http.Request) {
 
+	//fmt.Printf("agenda update end point")
+
 	user := context.Get(r, "user")
 
 	userParsed := user.(bson.M)
@@ -1950,7 +1970,7 @@ func updateAgendaAnnotationEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	agendaAnnotation.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 
-	if err := dao.Update("patientsFiles", agendaAnnotation.ID, agendaAnnotation); err != nil {
+	if err := dao.Update("agendaAnnotations", agendaAnnotation.ID, agendaAnnotation); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
