@@ -1,12 +1,13 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/form3tech-oss/jwt-go"
 	"gopkg.in/mgo.v2/bson"
 
 	C "github.com/sumaikun/go-rest-api/config"
@@ -63,9 +64,41 @@ func UserMiddleware(next http.Handler) http.Handler {
 			log.Fatal("Error decoding jwt")
 		}
 
-		//log.Println(claims["username"])
+		log.Println("claims username", claims["username"])
+
+		var userType int
 
 		user, err := dao.FindOneByKEY("users", "email", claims["username"].(string))
+
+		if user == nil {
+
+			fmt.Println("user not found trying doctor")
+
+			user, err = dao.FindOneByKEY("doctors", "email", claims["username"].(string))
+
+			//fmt.Println("user", user)
+
+			if user == nil {
+
+				user, err = dao.FindOneByKEY("contacts", "email", claims["username"].(string))
+				if err != nil {
+					log.Fatal("Can not get user from token")
+					return
+				} else {
+					userType = 3
+				}
+			}
+			if err != nil {
+
+				log.Fatal("Can not get user from token")
+				return
+			} else {
+				userType = 2
+			}
+
+		} else {
+			userType = 1
+		}
 
 		if err != nil {
 			log.Fatal("Can not get user from token")
@@ -73,6 +106,8 @@ func UserMiddleware(next http.Handler) http.Handler {
 		}
 
 		context.Set(r, "user", user)
+
+		context.Set(r, "userType", userType)
 
 		//log.Println(user)
 

@@ -8,10 +8,15 @@ import (
 
 // Config map data from config.toml
 type Config struct {
-	Port     string
-	Jwtkey   string
-	Server   string
-	Database string
+	Port          string
+	Jwtkey        string
+	Server        string
+	Database      string
+	Email         string
+	EmailPassword string
+	EmailSmtp     string
+	FrontEndUrl   string
+	LogoUrl       string
 }
 
 // Read and parse the configuration file

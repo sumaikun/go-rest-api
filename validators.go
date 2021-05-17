@@ -45,6 +45,79 @@ func userValidator(r *http.Request) (map[string]interface{}, Models.User) {
 	return
 }*/
 
+func resetPasswordValidator(r *http.Request) (map[string]interface{}, Models.ResetPassword) {
+
+	var reset Models.ResetPassword
+
+	rules := govalidator.MapData{
+		"password": []string{"required"},
+		"token":    []string{"required"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &reset,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, reset
+}
+
+func forgotPasswordValidator(r *http.Request) (map[string]interface{}, Models.ForgotPassword) {
+
+	var forgot Models.ForgotPassword
+
+	rules := govalidator.MapData{
+		"email": []string{"required"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &forgot,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, forgot
+}
+
+func confirmAccountValidator(r *http.Request) (map[string]interface{}, Models.ConfirmAccount) {
+
+	var confirm Models.ConfirmAccount
+
+	rules := govalidator.MapData{
+		"token": []string{"required"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &confirm,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, confirm
+}
+
 func productValidator(r *http.Request) (map[string]interface{}, Models.Product) {
 
 	var product Models.Product
@@ -134,34 +207,9 @@ func petValidator(r *http.Request) (map[string]interface{}, Models.Pet) {
 	return err, pet
 }
 
-func breedsValidator(r *http.Request) (map[string]interface{}, Models.Breeds) {
+func specialistTypesValidator(r *http.Request) (map[string]interface{}, Models.SpecialistTypes) {
 
-	var parameters Models.Breeds
-
-	rules := govalidator.MapData{
-		"name":    []string{"required"},
-		"species": []string{"required"},
-	}
-
-	opts := govalidator.Options{
-		Request:         r,
-		Data:            &parameters,
-		Rules:           rules,
-		RequiredDefault: true,
-	}
-
-	v := govalidator.New(opts)
-	e := v.ValidateJSON()
-	//fmt.Println(user)
-
-	err := map[string]interface{}{"validationError": e}
-
-	return err, parameters
-}
-
-func speciesValidator(r *http.Request) (map[string]interface{}, Models.Species) {
-
-	var parameters Models.Species
+	var parameters Models.SpecialistTypes
 
 	rules := govalidator.MapData{
 		"name": []string{"required"},
@@ -183,57 +231,9 @@ func speciesValidator(r *http.Request) (map[string]interface{}, Models.Species) 
 	return err, parameters
 }
 
-func examTypesValidator(r *http.Request) (map[string]interface{}, Models.ExamTypes) {
+func cityTypesValidator(r *http.Request) (map[string]interface{}, Models.CitiesTypes) {
 
-	var parameters Models.ExamTypes
-
-	rules := govalidator.MapData{
-		"name": []string{"required"},
-	}
-
-	opts := govalidator.Options{
-		Request:         r,
-		Data:            &parameters,
-		Rules:           rules,
-		RequiredDefault: true,
-	}
-
-	v := govalidator.New(opts)
-	e := v.ValidateJSON()
-	//fmt.Println(user)
-
-	err := map[string]interface{}{"validationError": e}
-
-	return err, parameters
-}
-
-func planTypesValidator(r *http.Request) (map[string]interface{}, Models.PlanTypes) {
-
-	var parameters Models.PlanTypes
-
-	rules := govalidator.MapData{
-		"name": []string{"required"},
-	}
-
-	opts := govalidator.Options{
-		Request:         r,
-		Data:            &parameters,
-		Rules:           rules,
-		RequiredDefault: true,
-	}
-
-	v := govalidator.New(opts)
-	e := v.ValidateJSON()
-	//fmt.Println(user)
-
-	err := map[string]interface{}{"validationError": e}
-
-	return err, parameters
-}
-
-func diseasesValidator(r *http.Request) (map[string]interface{}, Models.Diseases) {
-
-	var parameters Models.Diseases
+	var parameters Models.CitiesTypes
 
 	rules := govalidator.MapData{
 		"name": []string{"required"},
@@ -260,17 +260,9 @@ func validatorSelector(r *http.Request, entity string) (map[string]interface{}, 
 	var err map[string]interface{} = nil
 
 	switch entity {
-	case "breeds":
-		err, data := breedsValidator(r)
-		if len(err["validationError"].(url.Values)) == 0 {
-			data.ID = bson.NewObjectId()
-			data.Date = time.Now().String()
-			data.UpdateDate = time.Now().String()
-		}
-		return err, data, []string{"name"}
 
-	case "species":
-		err, data := speciesValidator(r)
+	case "specialistTypes":
+		err, data := specialistTypesValidator(r)
 		if len(err["validationError"].(url.Values)) == 0 {
 			data.ID = bson.NewObjectId()
 			data.Date = time.Now().String()
@@ -279,28 +271,8 @@ func validatorSelector(r *http.Request, entity string) (map[string]interface{}, 
 		fmt.Println(data)
 		return err, data, []string{"name"}
 
-	case "examTypes":
-		err, data := examTypesValidator(r)
-		if len(err["validationError"].(url.Values)) == 0 {
-			data.ID = bson.NewObjectId()
-			data.Date = time.Now().String()
-			data.UpdateDate = time.Now().String()
-		}
-		fmt.Println(data)
-		return err, data, []string{"name"}
-
-	case "planTypes":
-		err, data := planTypesValidator(r)
-		if len(err["validationError"].(url.Values)) == 0 {
-			data.ID = bson.NewObjectId()
-			data.Date = time.Now().String()
-			data.UpdateDate = time.Now().String()
-		}
-		fmt.Println(data)
-		return err, data, []string{"name"}
-
-	case "diseases":
-		err, data := diseasesValidator(r)
+	case "cityTypes":
+		err, data := cityTypesValidator(r)
 		if len(err["validationError"].(url.Values)) == 0 {
 			data.ID = bson.NewObjectId()
 			data.Date = time.Now().String()
@@ -320,17 +292,9 @@ func validatorSelectorUpdate(r *http.Request, entity string, prevData bson.M) (m
 	var err map[string]interface{} = nil
 
 	switch entity {
-	case "breeds":
-		err, data := breedsValidator(r)
-		if len(err["validationError"].(url.Values)) == 0 {
-			data.ID = prevData["_id"].(bson.ObjectId)
-			data.Date = prevData["date"].(string)
-			data.UpdateDate = time.Now().String()
-		}
-		return err, data, data.ID
 
-	case "species":
-		err, data := speciesValidator(r)
+	case "specialistTypes":
+		err, data := specialistTypesValidator(r)
 		if len(err["validationError"].(url.Values)) == 0 {
 			data.ID = prevData["_id"].(bson.ObjectId)
 			data.Date = prevData["date"].(string)
@@ -339,28 +303,8 @@ func validatorSelectorUpdate(r *http.Request, entity string, prevData bson.M) (m
 
 		return err, data, data.ID
 
-	case "examTypes":
-		err, data := examTypesValidator(r)
-		if len(err["validationError"].(url.Values)) == 0 {
-			data.ID = prevData["_id"].(bson.ObjectId)
-			data.Date = prevData["date"].(string)
-			data.UpdateDate = time.Now().String()
-		}
-
-		return err, data, data.ID
-
-	case "planTypes":
-		err, data := planTypesValidator(r)
-		if len(err["validationError"].(url.Values)) == 0 {
-			data.ID = prevData["_id"].(bson.ObjectId)
-			data.Date = prevData["date"].(string)
-			data.UpdateDate = time.Now().String()
-		}
-
-		return err, data, data.ID
-
-	case "diseases":
-		err, data := planTypesValidator(r)
+	case "cityTypes":
+		err, data := cityTypesValidator(r)
 		if len(err["validationError"].(url.Values)) == 0 {
 			data.ID = prevData["_id"].(bson.ObjectId)
 			data.Date = prevData["date"].(string)
@@ -620,4 +564,69 @@ func agendaAnnotationValidator(r *http.Request) (map[string]interface{}, Models.
 	err := map[string]interface{}{"validationError": e}
 
 	return err, agendaAnnotation
+}
+
+func userRegisterValidator(r *http.Request) (map[string]interface{}, Models.UserRegister) {
+
+	var userRegister Models.UserRegister
+
+	rules := govalidator.MapData{
+		"name":      []string{"required"},
+		"lastName":  []string{"required"},
+		"email":     []string{"required", "email"},
+		"phone":     []string{"required", "min:7", "max:10"},
+		"password":  []string{"required"},
+		"confirmed": []string{"bool"},
+		"city":      []string{"required", "cityParam"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &userRegister,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, userRegister
+}
+
+func doctorValidator(r *http.Request) (map[string]interface{}, Models.Doctor) {
+
+	var user Models.Doctor
+
+	rules := govalidator.MapData{
+		"name":           []string{"required"},
+		"lastName":       []string{"required"},
+		"email":          []string{"required", "email"},
+		"phone":          []string{"required", "min:7", "max:10"},
+		"address":        []string{"required"},
+		"birthDate":      []string{"required"},
+		"city":           []string{"required", "cityParam"},
+		"specialistType": []string{"required", "specialistTypeParam"},
+		"typeId":         []string{"required", "documentTypeEnum"},
+		"identification": []string{"required"},
+		"state":          []string{"stateEnum"},
+		"medicalCenter":  []string{"medicalCenterParam"},
+	}
+
+	opts := govalidator.Options{
+		Request:         r,
+		Data:            &user,
+		Rules:           rules,
+		RequiredDefault: true,
+	}
+
+	v := govalidator.New(opts)
+	e := v.ValidateJSON()
+	//fmt.Println(user)
+
+	err := map[string]interface{}{"validationError": e}
+
+	return err, user
 }

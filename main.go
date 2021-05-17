@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 	"github.com/gorilla/mux"
 
 	middleware "github.com/sumaikun/go-rest-api/middlewares"
-	Models "github.com/sumaikun/go-rest-api/models"
 
 	Config "github.com/sumaikun/go-rest-api/config"
 
@@ -18,11 +18,15 @@ import (
 	Helpers "github.com/sumaikun/go-rest-api/helpers"
 
 	"github.com/thedevsaddam/govalidator"
+
+	gomail "gopkg.in/mail.v2"
 )
 
 var (
-	port   string
-	jwtKey []byte
+	port        string
+	jwtKey      []byte
+	logo        string
+	frontEndUrl string
 )
 
 var dao = Dao.MongoConnector{}
@@ -71,14 +75,13 @@ func (c *CORSRouterDecorator) ServeHTTP(rw http.ResponseWriter, req *http.Reques
 
 func init() {
 
-	registerType((*Models.Breeds)(nil))
-	registerType((*Models.Species)(nil))
-
 	var config = Config.Config{}
 	config.Read()
 	//fmt.Println(config.Jwtkey)
+	frontEndUrl = config.FrontEndUrl
 	jwtKey = []byte(config.Jwtkey)
 	port = config.Port
+	logo = config.LogoUrl
 
 	dao.Server = config.Server
 	dao.Database = config.Database
@@ -180,6 +183,173 @@ func init() {
 		return nil
 	})
 
+	govalidator.AddCustomRule("cityParam", func(field string, rule string, message string, value interface{}) error {
+
+		fmt.Println("city value " + value.(string))
+		if len(value.(string)) > 0 {
+			_, err := dao.FindByID("cityTypes", value.(string))
+			if err != nil {
+				return fmt.Errorf("The %s field must be a valid value must have a valid city ID", field)
+			}
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("specialistTypeParam", func(field string, rule string, message string, value interface{}) error {
+
+		for _, element := range value.([]string) {
+			fmt.Println("specialist Type value " + element)
+
+			if len(element) > 0 {
+				_, err := dao.FindByID("specialistTypes", element)
+				if err != nil {
+					return fmt.Errorf("The %s field must be a valid value must have a valid specialist type ID", field)
+				}
+			}
+		}
+
+		return nil
+	})
+
+	govalidator.AddCustomRule("stateEnum", func(field string, rule string, message string, value interface{}) error {
+		if len(value.(string)) > 0 {
+			x := []string{"ACTIVE", "INACTIVE", "PENDING", "CHANGE_PASSWORD"}
+
+			val := Helpers.Contains(x, value.(string))
+
+			if val != true {
+				return fmt.Errorf("The %s field must be a valid value for state Enum", field)
+			}
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("documentTypeEnum", func(field string, rule string, message string, value interface{}) error {
+
+		if len(value.(string)) > 0 {
+			x := []string{"CC", "CE", "PS"}
+
+			val := Helpers.Contains(x, value.(string))
+
+			if val != true {
+				return fmt.Errorf("The %s field must be a valid value for documentType Enum", field)
+			}
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("medicalCenterParam", func(field string, rule string, message string, value interface{}) error {
+
+		if len(value.(string)) > 0 {
+			_, err := dao.FindByID("medicalCenters", value.(string))
+			if err != nil {
+				return fmt.Errorf("The %s field must be a valid value must have a valid medical center ID", field)
+			}
+		}
+
+		return nil
+	})
+
+	govalidator.AddCustomRule("doctorParam", func(field string, rule string, message string, value interface{}) error {
+
+		if len(value.(string)) > 0 {
+			_, err := dao.FindByID("doctors", value.(string))
+			if err != nil {
+				return fmt.Errorf("The %s field must be a valid value must have a valid medical center ID", field)
+			}
+		}
+
+		return nil
+	})
+
+	govalidator.AddCustomRule("appointmentTypeEnum", func(field string, rule string, message string, value interface{}) error {
+
+		if len(value.(string)) > 0 {
+			x := []string{"DONE", "PENDING", "CONFIRMED", "CANCELLED", "PENDING DOCTOR", "DUE"}
+
+			val := Helpers.Contains(x, value.(string))
+
+			if val != true {
+				return fmt.Errorf("The %s field must be a valid value for appointmentType Enum", field)
+			}
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("sexTypeEnum", func(field string, rule string, message string, value interface{}) error {
+
+		if len(value.(string)) > 0 {
+			x := []string{"M", "F"}
+
+			val := Helpers.Contains(x, value.(string))
+
+			if val != true {
+				return fmt.Errorf("The %s field must be a valid value for sexTypeEnum Enum", field)
+			}
+		}
+		return nil
+	})
+
+	govalidator.AddCustomRule("hoursRangeType", func(field string, rule string, message string, value interface{}) error {
+
+		parsedRangeType, ok := value.([]int)
+
+		if ok == true {
+			if len(parsedRangeType) != 2 {
+				return fmt.Errorf("The %s field must be a valid string array of two positions", field)
+			} else {
+				/*hour1, err := strconv.Atoi(parsedRangeType[0])
+				if err != nil {
+					return fmt.Errorf("internal error converting data", field)
+				}
+
+				hour2, err := strconv.Atoi(parsedRangeType[1])
+				if err != nil {
+					return fmt.Errorf("internal error converting data", field)
+				}*/
+
+				hour1 := parsedRangeType[0]
+
+				hour2 := parsedRangeType[1]
+
+				if hour2 <= hour1 {
+					return fmt.Errorf("The %s field have invalid inputs final time must no be greater than initial times", field)
+				}
+
+			}
+		} else {
+			return fmt.Errorf("The %s field must be a valid string array", field)
+		}
+
+		return nil
+
+	})
+
+	govalidator.AddCustomRule("daysRangeType", func(field string, rule string, message string, value interface{}) error {
+
+		parsedRangeType, ok := value.([]string)
+
+		if ok == true {
+
+			x := []string{"Mon", "Tues", "Wed", "Thurs", "Frid", "Sat", "Sun"}
+
+			for _, day := range parsedRangeType {
+
+				val := Helpers.Contains(x, day)
+
+				if val != true {
+					return fmt.Errorf("The %s field must have a valid day value", field)
+				}
+
+			}
+
+		} else {
+			return fmt.Errorf("The %s field must be a valid string array", field)
+		}
+
+		return nil
+	})
+
 }
 
 func main() {
@@ -187,16 +357,31 @@ func main() {
 	fmt.Println("start server in port " + port)
 	router := mux.NewRouter().StrictSlash(true)
 
+	//testEmail()
+
 	/* Authentication */
 	router.HandleFunc("/auth", authentication).Methods("POST")
 	router.Handle("/exampleHandler", middleware.AuthMiddleware(http.HandlerFunc(exampleHandler))).Methods("GET")
+	router.HandleFunc("/createInitialUser", createInititalUser).Methods("POST")
+	router.Handle("/resetPassword", middleware.AuthMiddleware(http.HandlerFunc(resetPassword))).Methods("POST")
+	router.HandleFunc("/forgotPassword", forgotPassword).Methods("POST")
+	router.Handle("/confirmAccount", middleware.AuthMiddleware(http.HandlerFunc(confirmAccount))).Methods("POST")
+	router.HandleFunc("/registerDoctor", registerDoctor).Methods("POST")
+	router.HandleFunc("/registerContact", registerContact).Methods("POST")
 
 	/* Users Routes */
-	router.Handle("/users", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createUsersEndPoint)))).Methods("POST")
+	router.Handle("/users", middleware.AuthMiddleware(middleware.UserMiddleware(middleware.OnlyAdminMiddleware(http.HandlerFunc(createUsersEndPoint))))).Methods("POST")
 	router.Handle("/users", middleware.AuthMiddleware(http.HandlerFunc(allUsersEndPoint))).Methods("GET")
 	router.Handle("/users/{id}", middleware.AuthMiddleware(http.HandlerFunc(findUserEndpoint))).Methods("GET")
-	router.Handle("/users/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeUserEndpoint))).Methods("DELETE")
-	router.Handle("/users/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateUserEndPoint)))).Methods("PUT")
+	//router.Handle("/users/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeUserEndpoint))).Methods("DELETE")
+	router.Handle("/users/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(middleware.OnlyAdminMiddleware(http.HandlerFunc(updateUserEndPoint))))).Methods("PUT")
+
+	/* Doctors Routes */
+	router.Handle("/doctors", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createDoctorsEndPoint)))).Methods("POST")
+	router.Handle("/doctors", middleware.AuthMiddleware(http.HandlerFunc(allDoctorsEndPoint))).Methods("GET")
+	router.Handle("/doctors/{id}", middleware.AuthMiddleware(http.HandlerFunc(findDoctorEndPoint))).Methods("GET")
+	router.Handle("/doctors/{id}", middleware.AuthMiddleware(http.HandlerFunc(inactivateDoctorEndPoint))).Methods("DELETE")
+	router.Handle("/doctors/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateDoctorEndPoint)))).Methods("PUT")
 
 	/* Products Routes */
 	router.Handle("/products", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createProductEndPoint)))).Methods("POST")
@@ -219,20 +404,6 @@ func main() {
 	router.Handle("/pets/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePetEndpoint))).Methods("DELETE")
 	router.Handle("/pets/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePetEndPoint)))).Methods("PUT")
 
-	/* Breeds Routes */
-	router.Handle("/breeds", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
-	router.Handle("/breeds", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
-	router.Handle("/breeds/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
-	router.Handle("/breeds/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
-	router.Handle("/breeds/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
-
-	/* Species Routes */
-	router.Handle("/species", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
-	router.Handle("/species", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
-	router.Handle("/species/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
-	router.Handle("/species/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
-	router.Handle("/species/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
-
 	/* Examtypes Routes */
 	router.Handle("/examTypes", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
 	router.Handle("/examTypes", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
@@ -244,14 +415,14 @@ func main() {
 	router.Handle("/planTypes", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
 	router.Handle("/planTypes", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
 	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
-	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
+	//router.Handle("/planTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
 	router.Handle("/planTypes/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
 
 	/* Diseases Routes */
 	router.Handle("/diseases", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
 	router.Handle("/diseases", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
 	router.Handle("/diseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
-	router.Handle("/diseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
+	//router.Handle("/diseases/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
 	router.Handle("/diseases/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
 
 	/* fileUpload */
@@ -268,7 +439,6 @@ func main() {
 	router.Handle("/parametersType", middleware.AuthMiddleware(http.HandlerFunc(parametersType))).Methods("GET")
 	router.Handle("/administrationWays", middleware.AuthMiddleware(http.HandlerFunc(administrationWayType))).Methods("GET")
 	router.Handle("/presentations", middleware.AuthMiddleware(http.HandlerFunc(presentationType))).Methods("GET")
-	router.Handle("/userStates", middleware.AuthMiddleware(http.HandlerFunc(stateType))).Methods("GET")
 
 	/* patientReviews */
 
@@ -342,5 +512,305 @@ func main() {
 	router.Handle("/agendaAnnotations/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeAgendaAnnotationEndpoint))).Methods("DELETE")
 	router.Handle("/agendaAnnotations/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateAgendaAnnotationEndPoint)))).Methods("PUT")
 
+	/* SpecialistTypes Routes */
+	router.Handle("/specialistTypes", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
+	router.Handle("/specialistTypes", middleware.AuthMiddleware(http.HandlerFunc(allParametersEndPoint))).Methods("GET")
+	router.Handle("/specialistTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
+	//router.Handle("/specialistTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
+	router.Handle("/specialistTypes/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
+
+	/* CityTypes Routes */
+	router.Handle("/cityTypes", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createParameterEndPoint)))).Methods("POST")
+	router.HandleFunc("/cityTypes", allParametersEndPoint).Methods("GET")
+	router.Handle("/cityTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(findParameterEndPoint))).Methods("GET")
+	//router.Handle("/cityTypes/{id}", middleware.AuthMiddleware(http.HandlerFunc(deleteParameterEndPoint))).Methods("DELETE")
+	router.Handle("/cityTypes/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateParameterEndPoint)))).Methods("PUT")
+
 	log.Fatal(http.ListenAndServe(":"+port, &CORSRouterDecorator{router}))
+}
+
+var htmlContent = "<div style='width:100%;text-align:center'><div><img src='" + logo + "' alt='logoclic-02' border='0'></div><br><div>	<span style='color: #0f76b0;font-size: 20px;font-weight: bold;'>!Hola ¡Javier gil!, los detalles de tu cita son los siguientes: </span><br/><br/><table style='border-collapse: collapse; width:100%; border: 1px solid black;'  ><tbody><tr><td style='border: 1px solid black' ><b>Diagnostico:</b></td><td style='border: 1px solid black'  >Infeccion debida a coronavirus, sin otra especificacion</td></tr><tr><td style='border: 1px solid black'  ><b>Observaciones:</b></td><td style='border: 1px solid black'  >Se hicieron diferentes pruebas y se determino que el diagnostico es debido a ...</td></tr></tbody></table><br/><span style='color: #0f76b0;font-size: 20px;font-weight: bold;'>Los medicamentos recetados son los siguientes:</span><br/><br/><table style='border-collapse: collapse; width:100%; border: 1px solid black;'  ><thead><tr><th style='color: #54ace2;font-size: 16px;font-weight: bold;'>Medicamento</th><th  style='color: #54ace2;font-size: 16px;font-weight: bold;'>Presentación</th><th  style='color: #54ace2;font-size: 16px;font-weight: bold;'>Posología</th><th  style='color: #54ace2;font-size: 16px;font-weight: bold;'>Duración</th></tr></thead><tbody><tr><td>dsd</td><td>dsd</td><td>dsd</td><td>dsd</td></tr></tbody></table></div></div>"
+
+func testEmail() {
+
+	var config = Config.Config{}
+	config.Read()
+
+	m := gomail.NewMessage()
+
+	// Set E-Mail sender
+	m.SetHeader("From", config.Email)
+
+	// Set E-Mail receivers
+	//m.SetHeader("To", "solucionesitecnologia@gmail.com")
+	m.SetHeader("To", "ventas.javc@gmail.com")
+
+	// Set E-Mail subject
+	m.SetHeader("Subject", "Bienvenido a clickal medic, confirma tu contraseña")
+
+	// Set E-Mail body. You can set plain text or html with text/html
+	//m.SetBody("text/plain", "This is Gomail test body")
+	m.SetBody("text/html", htmlContent)
+
+	// Settings for SMTP server
+	d := gomail.NewDialer(config.EmailSmtp, 587, config.Email, config.EmailPassword)
+
+	// This is only needed when SSL/TLS certificate is not valid on server.
+	// In production this should be set to false.
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Now send E-Mail
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	fmt.Println("Email Sent Successfully!")
+
+	return
+}
+
+func sendResetPasswordEmail(token string, mail string) {
+
+	var config = Config.Config{}
+	config.Read()
+
+	fmt.Println("Trying to send email! " + mail)
+
+	var htmlContentMessage = " <div style='width:100%;text-align:center'><div><img src='" + logo + "' alt='logoclic-02' border='0'></div><br><div>	<span style='color: #0f76b0;font-size: 20px;font-weight: bold;'>Habilita tu usuario con este </span><a style='color: #54ace2;font-weight: bold;font-size: 20px;' href='" + frontEndUrl + "/recover-password?tokenizer=" + token + "' >Enlace</a></div></div>"
+
+	m := gomail.NewMessage()
+
+	// Set E-Mail sender
+	m.SetHeader("From", config.Email)
+
+	// Set E-Mail receivers
+	m.SetHeader("To", mail)
+
+	// Set E-Mail subject
+	m.SetHeader("Subject", "Saludos de clickal medic, confirma tu contraseña")
+
+	// Set E-Mail body. You can set plain text or html with text/html
+	//m.SetBody("text/plain", "This is Gomail test body")
+	m.SetBody("text/html", htmlContentMessage)
+
+	// Settings for SMTP server
+	d := gomail.NewDialer(config.EmailSmtp, 587, config.Email, config.EmailPassword)
+
+	// This is only needed when SSL/TLS certificate is not valid on server.
+	// In production this should be set to false.
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Now send E-Mail
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	fmt.Println("Email Sent Successfully!")
+
+	return
+}
+
+func sendConfirmationEmail(token string, mail string) {
+
+	var config = Config.Config{}
+	config.Read()
+
+	fmt.Println("Trying to send email! " + mail)
+
+	var htmlContentMessage = " <div style='width:100%;text-align:center'><div><img src='" + logo + "' alt='logoclic-02' border='0'></div><br><div>	<span style='color: #0f76b0;font-size: 20px;font-weight: bold;'>Habilita tu usuario con este </span><a style='color: #54ace2;font-weight: bold;font-size: 20px;' href='" + frontEndUrl + "/confirm-account?tokenizer=" + token + "' >Enlace</a></div></div>"
+
+	m := gomail.NewMessage()
+
+	// Set E-Mail sender
+	m.SetHeader("From", config.Email)
+
+	// Set E-Mail receivers
+	m.SetHeader("To", mail)
+
+	// Set E-Mail subject
+	m.SetHeader("Subject", "Bienvenido a clickal medic, confirma tu usuario")
+
+	// Set E-Mail body. You can set plain text or html with text/html
+	//m.SetBody("text/plain", "This is Gomail test body")
+	m.SetBody("text/html", htmlContentMessage)
+
+	// Settings for SMTP server
+	d := gomail.NewDialer(config.EmailSmtp, 587, config.Email, config.EmailPassword)
+
+	// This is only needed when SSL/TLS certificate is not valid on server.
+	// In production this should be set to false.
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Now send E-Mail
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	fmt.Println("Email Sent Successfully!")
+
+	return
+}
+
+func sendForgotPasswordEmail(token string, mail string) {
+
+	var config = Config.Config{}
+	config.Read()
+
+	fmt.Println("Trying to send email! " + mail)
+
+	var htmlContentMessage = " <div style='width:100%;text-align:center'><div><img src='" + logo + "' alt='logoclic-02' border='0'></div><br><div>	<span style='color: #0f76b0;font-size: 20px;font-weight: bold;'>Habilita tu usuario con este </span><a style='color: #54ace2;font-weight: bold;font-size: 20px;' href='" + frontEndUrl + "/recover-password?tokenizer=" + token + "' >Enlace</a></div></div>"
+
+	m := gomail.NewMessage()
+
+	// Set E-Mail sender
+	m.SetHeader("From", config.Email)
+
+	// Set E-Mail receivers
+	m.SetHeader("To", mail)
+
+	// Set E-Mail subject
+	m.SetHeader("Subject", "Recupera tu usario con el siguiente enlace")
+
+	// Set E-Mail body. You can set plain text or html with text/html
+	//m.SetBody("text/plain", "This is Gomail test body")
+	m.SetBody("text/html", htmlContentMessage)
+
+	// Settings for SMTP server
+	d := gomail.NewDialer(config.EmailSmtp, 587, config.Email, config.EmailPassword)
+
+	// This is only needed when SSL/TLS certificate is not valid on server.
+	// In production this should be set to false.
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Now send E-Mail
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	fmt.Println("Email Sent Successfully!")
+
+	return
+}
+
+func sendAppointmentConfirmationEmail(token string, mail string, appointment string, doctorName string, appointmentDate string, appointmentHour string) {
+
+	var config = Config.Config{}
+	config.Read()
+
+	fmt.Println("Trying to send email! " + mail)
+
+	var htmlContentMessage = "  <div style='width:100%;text-align:center'><div><img src='" + logo + "' alt='logoclic-02' border='0'></div><br><div><span style='color: #0f76b0;font-size: 20px;font-weight: bold;'>El doctor </span><span style='color: #54ace2;font-size: 20px;font-weight: bold;'> " + doctorName + " </span><span style='color: #0f76b0;font-size: 20px;font-weight: bold;'> agendo su cita para:</span><span style='color: #54ace2;font-size: 20px;font-weight: bold;'> " + appointmentDate + " a las " + appointmentHour + " </span><br/><a style='color: #54ace2;font-weight: bold;font-size: 20px;' href='" + frontEndUrl + "/confirm-appointment?tokenizer=" + token + "&appointment= " + appointment + "' >Confirmar</a><a style='color: red;font-weight: bold;font-size: 20px;margin-left:5px' href='" + frontEndUrl + "/cencel-appointment?tokenizer=" + token + "&appointment= " + appointment + "  ' >Cancelar</a></div></div> "
+
+	m := gomail.NewMessage()
+
+	// Set E-Mail sender
+	m.SetHeader("From", config.Email)
+
+	// Set E-Mail receivers
+	m.SetHeader("To", mail)
+
+	// Set E-Mail subject
+	m.SetHeader("Subject", "¡Tienes una cita pendiente!")
+
+	// Set E-Mail body. You can set plain text or html with text/html
+	//m.SetBody("text/plain", "This is Gomail test body")
+	m.SetBody("text/html", htmlContentMessage)
+
+	// Settings for SMTP server
+	d := gomail.NewDialer(config.EmailSmtp, 587, config.Email, config.EmailPassword)
+
+	// This is only needed when SSL/TLS certificate is not valid on server.
+	// In production this should be set to false.
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Now send E-Mail
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	fmt.Println("Email Sent Successfully!")
+
+	return
+}
+
+func sendEmailConfirmationToPatient(mail string, phone string) {
+
+	var config = Config.Config{}
+	config.Read()
+
+	fmt.Println("Trying to send email! " + mail)
+
+	var htmlContentMessage = "<div style='width:100%;text-align:center'><div><img src='" + logo + "' alt='logoclic-02' border='0'></div><br><div>	<span style='color: #0f76b0;font-size: 20px;font-weight: bold;'>Se ha confirmado tu cita</span><br/>No dudes en llamar al " + phone + "</div></div>"
+
+	m := gomail.NewMessage()
+
+	// Set E-Mail sender
+	m.SetHeader("From", config.Email)
+
+	// Set E-Mail receivers
+	m.SetHeader("To", mail)
+
+	// Set E-Mail subject
+	m.SetHeader("Subject", "¡Tienes una cita pendiente!")
+
+	// Set E-Mail body. You can set plain text or html with text/html
+	//m.SetBody("text/plain", "This is Gomail test body")
+	m.SetBody("text/html", htmlContentMessage)
+
+	// Settings for SMTP server
+	d := gomail.NewDialer(config.EmailSmtp, 587, config.Email, config.EmailPassword)
+
+	// This is only needed when SSL/TLS certificate is not valid on server.
+	// In production this should be set to false.
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Now send E-Mail
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	fmt.Println("Email Sent Successfully!")
+
+	return
+}
+
+func sendEmailCancelationToPatient(mail string, phone string) {
+
+	var config = Config.Config{}
+	config.Read()
+
+	fmt.Println("Trying to send email! " + mail)
+
+	var htmlContentMessage = "<div style='width:100%;text-align:center'><div><img src='" + logo + "' alt='logoclic-02' border='0'></div><br><div>	<span style='color: red;font-size: 20px;font-weight: bold;'>Se ha cancelado tu cita</span><br/>Confirma que paso al " + phone + "</div></div>"
+
+	m := gomail.NewMessage()
+
+	// Set E-Mail sender
+	m.SetHeader("From", config.Email)
+
+	// Set E-Mail receivers
+	m.SetHeader("To", mail)
+
+	// Set E-Mail subject
+	m.SetHeader("Subject", "¡Tienes una cita pendiente!")
+
+	// Set E-Mail body. You can set plain text or html with text/html
+	//m.SetBody("text/plain", "This is Gomail test body")
+	m.SetBody("text/html", htmlContentMessage)
+
+	// Settings for SMTP server
+	d := gomail.NewDialer(config.EmailSmtp, 587, config.Email, config.EmailPassword)
+
+	// This is only needed when SSL/TLS certificate is not valid on server.
+	// In production this should be set to false.
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Now send E-Mail
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	fmt.Println("Email Sent Successfully!")
+
+	return
 }

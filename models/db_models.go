@@ -11,7 +11,57 @@ type User struct {
 	Address    string        `bson:"address" json:"address"`
 	Role       string        `bson:"role" json:"role"`
 	Phone      string        `bson:"phone" json:"phone"`
+	State      string        `bson:"state" json:"state"`
 	Picture    string        `bson:"picture" json:"picture"`
+	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
+	Date       string        `bson:"date" json:"date"`
+	UpdateDate string        `bson:"update_date" json:"update_date"`
+}
+
+//Doctor representation on mongo
+type Doctor struct {
+	ID             bson.ObjectId `bson:"_id" json:"id"`
+	Name           string        `bson:"name" json:"name"`
+	LastName       string        `bson:"lastName" json:"lastName"`
+	City           string        `bson:"city" json:"city"`
+	SpecialistType []string      `bson:"specialistType" json:"specialistType"`
+	BirthDate      string        `bson:"birthDate" json:"birthDate"`
+	Password       string        `bson:"password" json:"password"`
+	Email          string        `bson:"email" json:"email"`
+	Address        string        `bson:"address" json:"address"`
+	Phone          string        `bson:"phone" json:"phone"`
+	Phone2         string        `bson:"phone2" json:"phone2"`
+	TypeID         string        `bson:"typeId" json:"typeId"`
+	Identification string        `bson:"identification" json:"identification"`
+	Picture        string        `bson:"picture" json:"picture"`
+	State          string        `bson:"state" json:"state"`
+	Confirmed      bool          `bson:"confirmed" json:"confirmed"`
+	CreatedBy      string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy      string        `bson:"updatedBy" json:"updatedBy"`
+	Date           string        `bson:"date" json:"date"`
+	UpdateDate     string        `bson:"update_date" json:"update_date"`
+	MedicalCenter  string        `bson:"medicalCenter" json:"medicalCenter"`
+	Qualification  string        `bson:"qualification" json:"qualification"`
+	AboutDoctor    string        `bson:"aboutDoctor" json:"aboutDoctor"`
+}
+
+//SpecialistTypes representation on mongo
+type SpecialistTypes struct {
+	ID         bson.ObjectId `bson:"_id" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Meta       string        `bson:"meta" json:"meta"`
+	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
+	Date       string        `bson:"date" json:"date"`
+	UpdateDate string        `bson:"update_date" json:"update_date"`
+}
+
+//CitiesTypes representation on mongo
+type CitiesTypes struct {
+	ID         bson.ObjectId `bson:"_id" json:"id"`
+	Name       string        `bson:"name" json:"name"`
+	Meta       string        `bson:"meta" json:"meta"`
 	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
 	Date       string        `bson:"date" json:"date"`
@@ -25,6 +75,7 @@ type Product struct {
 	Value             string        `bson:"value" json:"value"`
 	Description       string        `bson:"description" json:"description"`
 	Picture           string        `bson:"picture" json:"picture"`
+	Doctor            string        `bson:"doctor" json:"doctor"`
 	AdministrationWay string        `bson:"administrationWay" json:"administrationWay"`
 	Presentation      string        `bson:"presentation" json:"presentation"`
 	Date              string        `bson:"date" json:"date"`
@@ -42,10 +93,12 @@ type Contact struct {
 	Identification string        `bson:"identification" json:"identification"`
 	Stratus        string        `bson:"stratus" json:"stratus"`
 	City           string        `bson:"city" json:"city"`
+	Password       string        `bson:"password" json:"password"`
 	Phone          string        `bson:"phone" json:"phone"`
 	Ocupation      string        `bson:"ocupation" json:"ocupation"`
 	Email          string        `bson:"email" json:"email"`
 	Picture        string        `bson:"picture" json:"picture"`
+	Confirmed      bool          `bson:"confirmed" json:"confirmed"`
 	CreatedBy      string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy      string        `bson:"updatedBy" json:"updatedBy"`
 	Date           string        `bson:"date" json:"date"`
@@ -65,33 +118,11 @@ type Pet struct {
 	Origin      string        `bson:"origin" json:"origin"`
 	Description string        `bson:"description" json:"description"`
 	Picture     string        `bson:"picture" json:"picture"`
+	Doctors     []string      `bson:"doctors" json:"doctors"`
 	CreatedBy   string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy   string        `bson:"updatedBy" json:"updatedBy"`
 	Date        string        `bson:"date" json:"date"`
 	UpdateDate  string        `bson:"update_date" json:"update_date"`
-}
-
-//Breeds representation on mongo
-type Breeds struct {
-	ID         bson.ObjectId `bson:"_id" json:"id"`
-	Name       string        `bson:"name" json:"name"`
-	Species    string        `bson:"species" json:"species"`
-	Meta       string        `bson:"meta" json:"meta"`
-	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
-	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
-	Date       string        `bson:"date" json:"date"`
-	UpdateDate string        `bson:"update_date" json:"update_date"`
-}
-
-//Species representation on mongo
-type Species struct {
-	ID         bson.ObjectId `bson:"_id" json:"id"`
-	Name       string        `bson:"name" json:"name"`
-	Meta       string        `bson:"meta" json:"meta"`
-	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
-	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
-	Date       string        `bson:"date" json:"date"`
-	UpdateDate string        `bson:"update_date" json:"update_date"`
 }
 
 //ExamTypes representation on mongo
@@ -218,16 +249,19 @@ type TherapeuticPlans struct {
 
 //Appointments representation on mongo
 type Appointments struct {
-	ID                     bson.ObjectId `bson:"_id" json:"id"`
-	Patient                string        `bson:"patient" json:"patient"`
-	ReasonForConsultation  string        `bson:"reasonForConsultation" json:"reasonForConsultation"`
-	ResultsForConsultation string        `bson:"resultsForConsultation" json:"resultsForConsultation"`
-	AppointmentDate        string        `bson:"appointmentDate" json:"appointmentDate"`
-	State                  string        `bson:"state" json:"state"`
-	CreatedBy              string        `bson:"createdBy" json:"createdBy"`
-	UpdatedBy              string        `bson:"updatedBy" json:"updatedBy"`
-	Date                   string        `bson:"date" json:"date"`
-	UpdateDate             string        `bson:"update_date" json:"update_date"`
+	ID                           bson.ObjectId `bson:"_id" json:"id"`
+	Patient                      string        `bson:"patient" json:"patient"`
+	ReasonForConsultation        string        `bson:"reasonForConsultation" json:"reasonForConsultation"`
+	MedicalReasonForConsultation string        `bson:"medicalReasonForConsultation" json:"medicalReasonForConsultation"`
+	ResultsForConsultation       string        `bson:"resultsForConsultation" json:"resultsForConsultation"`
+	Qualification                string        `bson:"qualification" json:"qualification"`
+	patientComments              string        `bson:"patientComments" json:"patientComments"`
+	AppointmentDate              string        `bson:"appointmentDate" json:"appointmentDate"`
+	State                        string        `bson:"state" json:"state"`
+	CreatedBy                    string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy                    string        `bson:"updatedBy" json:"updatedBy"`
+	Date                         string        `bson:"date" json:"date"`
+	UpdateDate                   string        `bson:"update_date" json:"update_date"`
 }
 
 //DetectedDiseases  representation on mongo
@@ -264,8 +298,59 @@ type AgendaAnnotation struct {
 	Title            string        `bson:"title" json:"title"`
 	Description      string        `bson:"description" json:"description"`
 	Patient          string        `bson:"patient" json:"patient"`
+	Doctor           string        `bson:"doctor" json:"doctor"`
 	CreatedBy        string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy        string        `bson:"updatedBy" json:"updatedBy"`
 	Date             string        `bson:"date" json:"date"`
 	UpdateDate       string        `bson:"update_date" json:"update_date"`
+}
+
+//DoctorSettings  representation on mongo
+type DoctorSettings struct {
+	ID              bson.ObjectId `bson:"_id" json:"id"`
+	HoursRange      []int         `bson:"hoursRange" json:"hoursRange"`
+	DaysRange       []string      `bson:"daysRange" json:"daysRange"`
+	IsScheduling    bool          `bson:"isScheduling" json:"isScheduling"`
+	AppointmentTime string        `bson:"appointmentTime" json:"appointmentTime"`
+	Doctor          string        `bson:"doctor" json:"doctor"`
+	CreatedBy       string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy       string        `bson:"updatedBy" json:"updatedBy"`
+	Date            string        `bson:"date" json:"date"`
+	UpdateDate      string        `bson:"update_date" json:"update_date"`
+}
+
+//DoctorSchedule Response
+type DoctorSchedule struct {
+	Appointments []Appointments     `json:"appointments"`
+	Annotations  []AgendaAnnotation `json:"annotation"`
+}
+
+//PatientAppointment representation on mongo
+type PatientAppointment struct {
+	Name            string `bson:"name" json:"name"`
+	LastName        string `bson:"lastName" json:"lastName"`
+	Doctor          string `bson:"doctor" json:"doctor"`
+	TypeID          string `bson:"typeId" json:"typeId"`
+	Identification  string `bson:"identification" json:"identification"`
+	City            string `bson:"city" json:"city"`
+	Phone           string `bson:"phone" json:"phone"`
+	Ocupation       string `bson:"ocupation" json:"ocupation"`
+	AppointmentDate string `bson:"appointmentDate" json:"appointmentDate"`
+	Email           string `bson:"email" json:"email"`
+}
+
+//Medicines representation on mongo
+type Medicines struct {
+	ID                bson.ObjectId `bson:"_id" json:"id"`
+	Patient           string        `bson:"patient" json:"patient"`
+	Appointment       string        `bson:"appointment" json:"appointment"`
+	AdministrationWay string        `bson:"administrationWay" json:"administrationWay"`
+	Duration          string        `bson:"duration" json:"duration"`
+	Posology          string        `bson:"posology" json:"posology"`
+	Presentation      string        `bson:"presentation" json:"presentation"`
+	Product           string        `bson:"product" json:"product"`
+	CreatedBy         string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy         string        `bson:"updatedBy" json:"updatedBy"`
+	Date              string        `bson:"date" json:"date"`
+	UpdateDate        string        `bson:"update_date" json:"update_date"`
 }
