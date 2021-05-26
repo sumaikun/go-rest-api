@@ -387,21 +387,22 @@ func main() {
 	router.Handle("/products", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createProductEndPoint)))).Methods("POST")
 	router.Handle("/products", middleware.AuthMiddleware(http.HandlerFunc(allProductsEndPoint))).Methods("GET")
 	router.Handle("/products/{id}", middleware.AuthMiddleware(http.HandlerFunc(findProductEndpoint))).Methods("GET")
-	router.Handle("/products/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeProductEndpoint))).Methods("DELETE")
+	//router.Handle("/products/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeProductEndpoint))).Methods("DELETE")
 	router.Handle("/products/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateProductEndPoint)))).Methods("PUT")
 
 	/* Contacts Routes */
 	router.Handle("/contacts", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createContactEndPoint)))).Methods("POST")
 	router.Handle("/contacts", middleware.AuthMiddleware(http.HandlerFunc(allContactsEndPoint))).Methods("GET")
 	router.Handle("/contacts/{id}", middleware.AuthMiddleware(http.HandlerFunc(findContactEndpoint))).Methods("GET")
-	router.Handle("/contacts/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeContactEndpoint))).Methods("DELETE")
+	//router.Handle("/contacts/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeContactEndpoint))).Methods("DELETE")
 	router.Handle("/contacts/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateContactEndPoint)))).Methods("PUT")
 
 	/* Pets Routes */
 	router.Handle("/pets", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createPetEndPoint)))).Methods("POST")
 	router.Handle("/pets", middleware.AuthMiddleware(http.HandlerFunc(allPetsEndPoint))).Methods("GET")
 	router.Handle("/pets/{id}", middleware.AuthMiddleware(http.HandlerFunc(findPetEndpoint))).Methods("GET")
-	router.Handle("/pets/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePetEndpoint))).Methods("DELETE")
+	//router.Handle("/pets/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePetEndpoint))).Methods("DELETE")
+	router.Handle("/updatePetContactsEndPoint/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePetContactsEndPoint)))).Methods("PUT")
 	router.Handle("/pets/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePetEndPoint)))).Methods("PUT")
 
 	/* Examtypes Routes */

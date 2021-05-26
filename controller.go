@@ -882,6 +882,8 @@ func createPetEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	user := context.Get(r, "user")
 
+	userType := context.Get(r, "userType")
+
 	userParsed := user.(bson.M)
 
 	defer r.Body.Close()
@@ -895,11 +897,20 @@ func createPetEndPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var doctorsArray []string
+
+	if userType.(int) == 2 {
+		doctorsArray = append(doctorsArray, userParsed["_id"].(bson.ObjectId).Hex())
+
+		pet.Doctors = doctorsArray
+	}
+
 	pet.ID = bson.NewObjectId()
 	pet.Date = time.Now().String()
 	pet.UpdateDate = time.Now().String()
 	pet.CreatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 	pet.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
+	pet.Contacts = []string{}
 
 	if err := dao.Insert("pets", pet, nil); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
@@ -974,6 +985,22 @@ func updatePetEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	pet.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 
+	fmt.Println("parsedData", parsedData["doctors"])
+
+	aDoctors := make([]string, len(parsedData["doctors"].([]interface{})))
+	for i, v := range parsedData["doctors"].([]interface{}) {
+		aDoctors[i] = v.(string)
+	}
+
+	aContacts := make([]string, len(parsedData["contacts"].([]interface{})))
+	for i, v := range parsedData["contacts"].([]interface{}) {
+		aContacts[i] = v.(string)
+	}
+
+	pet.Doctors = aDoctors
+
+	pet.Contacts = aContacts
+
 	if err := dao.Update("pets", pet.ID, pet); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -981,6 +1008,30 @@ func updatePetEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 
+}
+
+func updatePetContactsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	defer r.Body.Close()
+
+	w.Header().Set("Content-type", "application/json")
+
+	var pet Models.Pet
+
+	// Get the JSON body and decode into credentials
+	err := json.NewDecoder(r.Body).Decode(&pet)
+
+	if err != nil {
+		// If the structure of the body is wrong, return an HTTP error
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	dao.PartialUpdate("pets", params["id"], bson.M{"contacts": pet.Contacts})
+
+	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
 //-------------------------------------- Parameters Functions --------------------------------

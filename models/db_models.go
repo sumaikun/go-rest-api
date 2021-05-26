@@ -119,6 +119,7 @@ type Pet struct {
 	Description string        `bson:"description" json:"description"`
 	Picture     string        `bson:"picture" json:"picture"`
 	Doctors     []string      `bson:"doctors" json:"doctors"`
+	Contacts    []string      `bson:"contacts" json:"contacts"`
 	CreatedBy   string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy   string        `bson:"updatedBy" json:"updatedBy"`
 	Date        string        `bson:"date" json:"date"`
