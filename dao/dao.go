@@ -298,3 +298,16 @@ func (mongo *MongoConnector) CustomQuery(collection string, query bson.M) ([]bso
 	err := db.C(collection).Find(query).All(&data)
 	return data, err
 }
+
+//FindInArrayKey in repository
+func (mongo *MongoConnector) FindInArrayKey(collection string, key string, id string) (interface{}, error) {
+
+	var data []interface{}
+	err := db.C(collection).Find(bson.M{
+		key: bson.M{
+			"$elemMatch": bson.M{"$eq": id},
+		},
+	}).All(&data)
+	return data, err
+
+}

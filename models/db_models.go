@@ -70,18 +70,16 @@ type CitiesTypes struct {
 
 //Product representation on mongo
 type Product struct {
-	ID                bson.ObjectId `bson:"_id" json:"id"`
-	Name              string        `bson:"name" json:"name"`
-	Value             string        `bson:"value" json:"value"`
-	Description       string        `bson:"description" json:"description"`
-	Picture           string        `bson:"picture" json:"picture"`
-	Doctor            string        `bson:"doctor" json:"doctor"`
-	AdministrationWay string        `bson:"administrationWay" json:"administrationWay"`
-	Presentation      string        `bson:"presentation" json:"presentation"`
-	Date              string        `bson:"date" json:"date"`
-	UpdateDate        string        `bson:"update_date" json:"update_date"`
-	CreatedBy         string        `bson:"createdBy" json:"createdBy"`
-	UpdatedBy         string        `bson:"updatedBy" json:"updatedBy"`
+	ID          bson.ObjectId `bson:"_id" json:"id"`
+	Name        string        `bson:"name" json:"name"`
+	Value       string        `bson:"value" json:"value"`
+	Description string        `bson:"description" json:"description"`
+	Picture     string        `bson:"picture" json:"picture"`
+	Doctors     []string      `bson:"doctors" json:"doctors"`
+	Date        string        `bson:"date" json:"date"`
+	UpdateDate  string        `bson:"update_date" json:"update_date"`
+	CreatedBy   string        `bson:"createdBy" json:"createdBy"`
+	UpdatedBy   string        `bson:"updatedBy" json:"updatedBy"`
 }
 
 //Contact representation on mongo
@@ -97,6 +95,7 @@ type Contact struct {
 	Phone          string        `bson:"phone" json:"phone"`
 	Ocupation      string        `bson:"ocupation" json:"ocupation"`
 	Email          string        `bson:"email" json:"email"`
+	Doctors        []string      `bson:"doctors" json:"doctors"`
 	Picture        string        `bson:"picture" json:"picture"`
 	Confirmed      bool          `bson:"confirmed" json:"confirmed"`
 	CreatedBy      string        `bson:"createdBy" json:"createdBy"`
