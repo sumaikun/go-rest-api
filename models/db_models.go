@@ -125,28 +125,6 @@ type Pet struct {
 	UpdateDate  string        `bson:"update_date" json:"update_date"`
 }
 
-//ExamTypes representation on mongo
-type ExamTypes struct {
-	ID         bson.ObjectId `bson:"_id" json:"id"`
-	Name       string        `bson:"name" json:"name"`
-	Meta       string        `bson:"meta" json:"meta"`
-	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
-	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
-	Date       string        `bson:"date" json:"date"`
-	UpdateDate string        `bson:"update_date" json:"update_date"`
-}
-
-//PlanTypes representation on mongo
-type PlanTypes struct {
-	ID         bson.ObjectId `bson:"_id" json:"id"`
-	Name       string        `bson:"name" json:"name"`
-	Meta       string        `bson:"meta" json:"meta"`
-	CreatedBy  string        `bson:"createdBy" json:"createdBy"`
-	UpdatedBy  string        `bson:"updatedBy" json:"updatedBy"`
-	Date       string        `bson:"date" json:"date"`
-	UpdateDate string        `bson:"update_date" json:"update_date"`
-}
-
 //Diseases representation on mongo
 type Diseases struct {
 	ID         bson.ObjectId `bson:"_id" json:"id"`
@@ -216,48 +194,24 @@ type PhysiologicalConstants struct {
 	UpdateDate                    string        `bson:"update_date" json:"update_date"`
 }
 
-//DiagnosticPlans representation on mongo
-type DiagnosticPlans struct {
-	ID                bson.ObjectId `bson:"_id" json:"id"`
-	Patient           string        `bson:"patient" json:"patient"`
-	TypeOfExam        string        `bson:"typeOfExam" json:"typeOfExam"`
-	Description       string        `bson:"description" json:"description"`
-	ExamDate          string        `bson:"examDate" json:"examDate"`
-	Laboratory        string        `bson:"laboratory" json:"laboratory"`
-	LaboratoryAddress string        `bson:"laboratoryAddress" json:"laboratoryAddress"`
-	Results           string        `bson:"results" json:"results"`
-	CreatedBy         string        `bson:"createdBy" json:"createdBy"`
-	UpdatedBy         string        `bson:"updatedBy" json:"updatedBy"`
-	Date              string        `bson:"date" json:"date"`
-	UpdateDate        string        `bson:"update_date" json:"update_date"`
-}
-
-//TherapeuticPlans representation on mongo
-type TherapeuticPlans struct {
-	ID                          bson.ObjectId `bson:"_id" json:"id"`
-	Patient                     string        `bson:"patient" json:"patient"`
-	TypeOfPlan                  string        `bson:"typeOfPlan" json:"typeOfPlan"`
-	ActiveSubstanceToAdminister string        `bson:"activeSubstanceToAdminister" json:"activeSubstanceToAdminister"`
-	Posology                    string        `bson:"posology" json:"posology"`
-	TotalDose                   string        `bson:"totalDose" json:"totalDose"`
-	FrecuencyAndDuration        string        `bson:"frecuencyAndDuration" json:"frecuencyAndDuration"`
-	CreatedBy                   string        `bson:"createdBy" json:"createdBy"`
-	UpdatedBy                   string        `bson:"updatedBy" json:"updatedBy"`
-	Date                        string        `bson:"date" json:"date"`
-	UpdateDate                  string        `bson:"update_date" json:"update_date"`
-}
-
 //Appointments representation on mongo
 type Appointments struct {
 	ID                           bson.ObjectId `bson:"_id" json:"id"`
 	Patient                      string        `bson:"patient" json:"patient"`
+	Doctor                       string        `bson:"doctor" json:"doctor"`
 	ReasonForConsultation        string        `bson:"reasonForConsultation" json:"reasonForConsultation"`
-	MedicalReasonForConsultation string        `bson:"medicalReasonForConsultation" json:"medicalReasonForConsultation"`
 	ResultsForConsultation       string        `bson:"resultsForConsultation" json:"resultsForConsultation"`
-	Qualification                string        `bson:"qualification" json:"qualification"`
-	patientComments              string        `bson:"patientComments" json:"patientComments"`
+	MedicalReasonForConsultation string        `bson:"medicalReasonForConsultation" json:"medicalReasonForConsultation"`
+	AgendaAnnotation             string        `bson:"agendaAnnotation" json:"agendaAnnotation"`
 	AppointmentDate              string        `bson:"appointmentDate" json:"appointmentDate"`
+	ExamType                     string        `bson:"examType" json:"examType"`
+	ExamDescription              string        `bson:"examDescription" json:"examDescription"`
+	Laboratory                   string        `bson:"laboratory" json:"laboratory"`
+	LaboratoryAddress            string        `bson:"laboratoryAddress" json:"laboratoryAddress"`
 	State                        string        `bson:"state" json:"state"`
+	Qualification                string        `bson:"qualification" json:"qualification"`
+	PatientComments              string        `bson:"patientComments" json:"patientComments"`
+	Products                     []string      `bson:"products" json:"products"`
 	CreatedBy                    string        `bson:"createdBy" json:"createdBy"`
 	UpdatedBy                    string        `bson:"updatedBy" json:"updatedBy"`
 	Date                         string        `bson:"date" json:"date"`

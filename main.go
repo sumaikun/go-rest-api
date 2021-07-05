@@ -459,32 +459,17 @@ func main() {
 	//router.Handle("/physiologicalConstants/{id}", middleware.AuthMiddleware(http.HandlerFunc(removePhysiologicalConstantsEndpoint))).Methods("DELETE")
 	router.Handle("/physiologicalConstants/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updatePhysiologicalConstantsEndPoint)))).Methods("PUT")
 
-	/*  diagnostic Plan */
-
-	router.Handle("/diagnosticPlans", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createDiagnosticPlansEndPoint)))).Methods("POST")
-	router.Handle("/diagnosticPlans", middleware.AuthMiddleware(http.HandlerFunc(allDiagnosticPlansEndPoint))).Methods("GET")
-	router.Handle("/diagnosticPlans/{pet}", middleware.AuthMiddleware(http.HandlerFunc(findDiagnosticPlansByPatientEndpoint))).Methods("GET")
-	router.Handle("/diagnosticPlan/{id}", middleware.AuthMiddleware(http.HandlerFunc(findDiagnosticPlansEndpoint))).Methods("GET")
-	//router.Handle("/diagnosticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeDiagnosticPlansEndpoint))).Methods("DELETE")
-	router.Handle("/diagnosticPlans/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateDiagnosticPlansEndPoint)))).Methods("PUT")
-
-	/* therapeutic Plan */
-
-	router.Handle("/therapeuticPlans", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createTherapeuticPlansEndPoint)))).Methods("POST")
-	router.Handle("/therapeuticPlans", middleware.AuthMiddleware(http.HandlerFunc(allTherapeuticPlansEndPoint))).Methods("GET")
-	router.Handle("/therapeuticPlans/{pet}", middleware.AuthMiddleware(http.HandlerFunc(findTherapeuticPlansByPatientEndpoint))).Methods("GET")
-	router.Handle("/therapeuticPlan/{id}", middleware.AuthMiddleware(http.HandlerFunc(findTherapeuticPlansEndpoint))).Methods("GET")
-	//router.Handle("/therapeuticPlans/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeTherapeuticPlansEndpoint))).Methods("DELETE")
-	router.Handle("/therapeuticPlans/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateTherapeuticPlansEndPoint)))).Methods("PUT")
-
 	/* appointment */
 
 	router.Handle("/appointments", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(createAppointmentsEndPoint)))).Methods("POST")
 	router.Handle("/appointments", middleware.AuthMiddleware(http.HandlerFunc(allAppointmentsEndPoint))).Methods("GET")
 	router.Handle("/appointmentsByPatient/{pet}", middleware.AuthMiddleware(http.HandlerFunc(findAppointmentsByPatientEndpoint))).Methods("GET")
+	router.Handle("/appointmentsByPatientAndDate/{pet}/{date}", middleware.AuthMiddleware(http.HandlerFunc(appointmentsByPatientAndDateEndPoint))).Methods("GET")
 	router.Handle("/appointment/{id}", middleware.AuthMiddleware(http.HandlerFunc(findAppointmentsEndpoint))).Methods("GET")
 	//router.Handle("/appointments/{id}", middleware.AuthMiddleware(http.HandlerFunc(removeAppointmentsEndpoint))).Methods("DELETE")
 	router.Handle("/appointments/{id}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(updateAppointmentsEndPoint)))).Methods("PUT")
+	router.Handle("/confirmAppointment/{email}/{appointment}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(confirmPatientAppointment)))).Methods("GET")
+	router.Handle("/cancelAppointment/{email}/{appointment}", middleware.AuthMiddleware(middleware.UserMiddleware(http.HandlerFunc(cancelPatientAppointment)))).Methods("GET")
 
 	/* medicines */
 
@@ -704,7 +689,7 @@ func sendForgotPasswordEmail(token string, mail string) {
 	// Now send E-Mail
 	if err := d.DialAndSend(m); err != nil {
 		fmt.Println(err)
-		panic(err)
+		//panic(err)
 	}
 	fmt.Println("Email Sent Successfully!")
 
@@ -745,7 +730,7 @@ func sendAppointmentConfirmationEmail(token string, mail string, appointment str
 	// Now send E-Mail
 	if err := d.DialAndSend(m); err != nil {
 		fmt.Println(err)
-		panic(err)
+		//panic(err)
 	}
 	fmt.Println("Email Sent Successfully!")
 
@@ -786,7 +771,7 @@ func sendEmailConfirmationToPatient(mail string, phone string) {
 	// Now send E-Mail
 	if err := d.DialAndSend(m); err != nil {
 		fmt.Println(err)
-		panic(err)
+		//panic(err)
 	}
 	fmt.Println("Email Sent Successfully!")
 
@@ -827,7 +812,7 @@ func sendEmailCancelationToPatient(mail string, phone string) {
 	// Now send E-Mail
 	if err := d.DialAndSend(m); err != nil {
 		fmt.Println(err)
-		panic(err)
+		//panic(err)
 	}
 	fmt.Println("Email Sent Successfully!")
 

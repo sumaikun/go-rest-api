@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	"log"
 
 	"gopkg.in/mgo.v2"
@@ -310,4 +311,19 @@ func (mongo *MongoConnector) FindInArrayKey(collection string, key string, id st
 	}).All(&data)
 	return data, err
 
+}
+
+//FindAppointmentByDateAndPatient specific query for get day appointment
+func (mongo *MongoConnector) FindAppointmentByDateAndPatient(patient string, date string) ([]interface{}, error) {
+
+	fmt.Println("patient", patient, "date", date)
+
+	var data []interface{}
+	err := db.C("appointments").Find(bson.M{
+		"$and": []bson.M{
+			bson.M{"appointmentDate": bson.RegEx{date + ".*", ""}},
+			bson.M{"patient": patient},
+		},
+	}).All(&data)
+	return data, err
 }

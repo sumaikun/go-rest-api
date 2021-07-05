@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -1717,283 +1718,40 @@ func updatePhysiologicalConstantsEndPoint(w http.ResponseWriter, r *http.Request
 
 }
 
-//--------------------------------Diagnostic Plans functions ----------------------------------
-
-func allDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-type", "application/json")
-
-	diagnosticPlan, err := dao.FindAll("diagnosticPlans")
-	if err != nil {
-		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	Helpers.RespondWithJSON(w, http.StatusOK, diagnosticPlan)
-}
-
-func findDiagnosticPlansByPatientEndpoint(w http.ResponseWriter, r *http.Request) {
-
-	params := mux.Vars(r)
-
-	w.Header().Set("Content-type", "application/json")
-
-	diagnosticPlans, err := dao.FindManyByKey("diagnosticPlans", "pet", params["pet"])
-	if err != nil {
-		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	Helpers.RespondWithJSON(w, http.StatusOK, diagnosticPlans)
-
-}
-
-func createDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
-
-	user := context.Get(r, "user")
-
-	userParsed := user.(bson.M)
-
-	defer r.Body.Close()
-	w.Header().Set("Content-type", "application/json")
-
-	err, diagnosticPlan := diagnosticPlansValidator(r)
-
-	if len(err["validationError"].(url.Values)) > 0 {
-		//fmt.Println(len(e))
-		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
-		return
-	}
-
-	diagnosticPlan.ID = bson.NewObjectId()
-	diagnosticPlan.Date = time.Now().String()
-	diagnosticPlan.UpdateDate = time.Now().String()
-	diagnosticPlan.CreatedBy = userParsed["_id"].(bson.ObjectId).Hex()
-	diagnosticPlan.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
-
-	if err := dao.Insert("diagnosticPlans", diagnosticPlan, nil); err != nil {
-		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	Helpers.RespondWithJSON(w, http.StatusCreated, diagnosticPlan)
-
-}
-
-func findDiagnosticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	pet, err := dao.FindByID("diagnosticPlans", params["id"])
-	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Diagnostic Plan ID")
-		return
-	}
-	Helpers.RespondWithJSON(w, http.StatusOK, pet)
-
-}
-
-func removeDiagnosticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
-
-	params := mux.Vars(r)
-	err := dao.DeleteByID("diagnosticPlans", params["id"])
-	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Diagnostic Plan ID")
-		return
-	}
-	Helpers.RespondWithJSON(w, http.StatusOK, nil)
-
-}
-
-func updateDiagnosticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
-
-	user := context.Get(r, "user")
-
-	userParsed := user.(bson.M)
-
-	defer r.Body.Close()
-	params := mux.Vars(r)
-
-	w.Header().Set("Content-type", "application/json")
-
-	err, diagnosticPlan := diagnosticPlansValidator(r)
-
-	if len(err["validationError"].(url.Values)) > 0 {
-		//fmt.Println(len(e))
-		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
-		return
-	}
-
-	prevData, err2 := dao.FindByID("diagnosticPlans", params["id"])
-	if err2 != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Diagnostic Plan ID")
-		return
-	}
-
-	parsedData := prevData.(bson.M)
-
-	diagnosticPlan.ID = parsedData["_id"].(bson.ObjectId)
-
-	diagnosticPlan.Date = parsedData["date"].(string)
-
-	diagnosticPlan.UpdateDate = time.Now().String()
-
-	diagnosticPlan.CreatedBy = parsedData["createdBy"].(string)
-
-	diagnosticPlan.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
-
-	if err := dao.Update("diagnosticPlans", diagnosticPlan.ID, diagnosticPlan); err != nil {
-		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
-
-}
-
-//--------------------------------TherapeuticPlans functions ----------------------------------
-
-func allTherapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-type", "application/json")
-
-	therapeuticPlan, err := dao.FindAll("therapeuticPlans")
-	if err != nil {
-		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	Helpers.RespondWithJSON(w, http.StatusOK, therapeuticPlan)
-}
-
-func findTherapeuticPlansByPatientEndpoint(w http.ResponseWriter, r *http.Request) {
-
-	params := mux.Vars(r)
-
-	w.Header().Set("Content-type", "application/json")
-
-	therapeuticPlans, err := dao.FindManyByKey("therapeuticPlans", "pet", params["pet"])
-	if err != nil {
-		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	Helpers.RespondWithJSON(w, http.StatusOK, therapeuticPlans)
-
-}
-
-func createTherapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
-
-	user := context.Get(r, "user")
-
-	userParsed := user.(bson.M)
-
-	defer r.Body.Close()
-	w.Header().Set("Content-type", "application/json")
-
-	err, therapeuticPlan := therapeuticPlansValidator(r)
-
-	if len(err["validationError"].(url.Values)) > 0 {
-		//fmt.Println(len(e))
-		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
-		return
-	}
-
-	therapeuticPlan.ID = bson.NewObjectId()
-	therapeuticPlan.Date = time.Now().String()
-	therapeuticPlan.UpdateDate = time.Now().String()
-	therapeuticPlan.CreatedBy = userParsed["_id"].(bson.ObjectId).Hex()
-	therapeuticPlan.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
-
-	if err := dao.Insert("therapeuticPlans", therapeuticPlan, nil); err != nil {
-		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	Helpers.RespondWithJSON(w, http.StatusCreated, therapeuticPlan)
-
-}
-
-func findTherapeuticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	pet, err := dao.FindByID("therapeuticPlans", params["id"])
-	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Therapuetic Plan ID")
-		return
-	}
-	Helpers.RespondWithJSON(w, http.StatusOK, pet)
-
-}
-
-func removeTherapeuticPlansEndpoint(w http.ResponseWriter, r *http.Request) {
-
-	params := mux.Vars(r)
-	err := dao.DeleteByID("therapeuticPlans", params["id"])
-	if err != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Therapuetic Plan ID")
-		return
-	}
-	Helpers.RespondWithJSON(w, http.StatusOK, nil)
-
-}
-
-func updateTherapeuticPlansEndPoint(w http.ResponseWriter, r *http.Request) {
-
-	user := context.Get(r, "user")
-
-	userParsed := user.(bson.M)
-
-	defer r.Body.Close()
-	params := mux.Vars(r)
-
-	w.Header().Set("Content-type", "application/json")
-
-	err, therapeuticPlan := therapeuticPlansValidator(r)
-
-	if len(err["validationError"].(url.Values)) > 0 {
-		//fmt.Println(len(e))
-		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
-		return
-	}
-
-	prevData, err2 := dao.FindByID("therapeuticPlans", params["id"])
-	if err2 != nil {
-		Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Therapuetic Plan ID")
-		return
-	}
-
-	parsedData := prevData.(bson.M)
-
-	therapeuticPlan.ID = parsedData["_id"].(bson.ObjectId)
-
-	therapeuticPlan.Date = parsedData["date"].(string)
-
-	therapeuticPlan.UpdateDate = time.Now().String()
-
-	therapeuticPlan.CreatedBy = parsedData["createdBy"].(string)
-
-	therapeuticPlan.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
-
-	if err := dao.Update("therapeuticPlans", therapeuticPlan.ID, therapeuticPlan); err != nil {
-		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
-
-}
-
 //--------------------------------Appointments functions ----------------------------------
 
 func allAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-type", "application/json")
+	userType := context.Get(r, "userType")
 
-	diagnosticPlan, err := dao.FindAllWithPatients("appointments")
-	if err != nil {
-		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
+	if userType.(int) == 1 {
+		w.Header().Set("Content-type", "application/json")
+
+		appointments, err := dao.FindAllWithPatients("appointments")
+		if err != nil {
+			Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		Helpers.RespondWithJSON(w, http.StatusOK, appointments)
 	}
 
-	Helpers.RespondWithJSON(w, http.StatusOK, diagnosticPlan)
+	if userType.(int) == 2 {
+		w.Header().Set("Content-type", "application/json")
+
+		appointments, err := dao.FindManyByKeyWithPatiens("appointments", "doctor", userParsed["_id"].(bson.ObjectId).Hex())
+		if err != nil {
+			Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		Helpers.RespondWithJSON(w, http.StatusOK, appointments)
+	}
+
 }
 
 func findAppointmentsByPatientEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -2012,28 +1770,129 @@ func findAppointmentsByPatientEndpoint(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func appointmentsByPatientAndDateEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	appointments, err := dao.FindAppointmentByDateAndPatient(params["pet"], params["date"])
+	if err != nil {
+		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	Helpers.RespondWithJSON(w, http.StatusOK, appointments)
+}
+
 func createAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
+
+	userType := context.Get(r, "userType")
 
 	user := context.Get(r, "user")
 
 	userParsed := user.(bson.M)
 
-	defer r.Body.Close()
 	w.Header().Set("Content-type", "application/json")
 
-	err, appointment := appointmentsValidator(r)
+	// temporary buffer
+	b := bytes.NewBuffer(make([]byte, 0))
 
-	if len(err["validationError"].(url.Values)) > 0 {
-		//fmt.Println(len(e))
-		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+	// TeeReader returns a Reader that writes to b what it reads from r.Body.
+	reader := io.TeeReader(r.Body, b)
+
+	var appointment Models.Appointments
+
+	var err map[string]interface{}
+	// Get the JSON body and decode into credentials
+	err0 := json.NewDecoder(reader).Decode(&appointment)
+
+	if err0 != nil {
+		// If the structure of the body is wrong, return an HTTP error
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	appointment.ID = bson.NewObjectId()
+	// we are done with body
+	defer r.Body.Close()
+
+	r.Body = ioutil.NopCloser(b)
+
+	newID := bson.NewObjectId()
+
+	if appointment.State == "PENDING" {
+		fmt.Println("on pending")
+		err, appointment = appointmentsScheduleValidator(r)
+
+		fmt.Println("err", err, appointment)
+
+		if len(err["validationError"].(url.Values)) > 0 {
+			Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+			return
+		} else {
+
+			patient, _ := dao.FindByID("pets", appointment.Patient)
+
+			parsedPatient := patient.(bson.M)
+
+			expirationTime := time.Now().Add(24 * time.Hour)
+
+			contactsPatient := parsedPatient["contacts"].([]interface{})
+
+			for _, element := range contactsPatient {
+
+				contact, err := dao.FindByID("contacts", element.(string))
+
+				if err != nil {
+					Helpers.RespondWithError(w, http.StatusBadRequest, "Invalid Appointment ID")
+					return
+				}
+
+				parsedContact := contact.(bson.M)
+
+				// set token for email
+				claims := &Models.TypeClaims{
+					Username: parsedContact["email"].(string),
+					Type:     "email-confirmation-" + newID.Hex(),
+					StandardClaims: jwt.StandardClaims{
+						ExpiresAt: expirationTime.Unix(),
+					},
+				}
+
+				token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+				tokenString, _ := token.SignedString(jwtKey)
+
+				dateInfo := strings.Split(appointment.AppointmentDate, " ")
+
+				hour := dateInfo[1]
+
+				//fmt.Println("dateInfo", dateInfo[0], hour[:len(hour)-3])
+
+				go sendAppointmentConfirmationEmail(tokenString, parsedContact["email"].(string), newID.Hex(), userParsed["name"].(string)+" "+userParsed["lastName"].(string), dateInfo[0], hour[:len(hour)-3])
+			}
+
+		}
+	} else {
+		err, appointment = appointmentsValidator(r)
+
+		if len(err["validationError"].(url.Values)) > 0 {
+			//fmt.Println("appointment", appointment.State)
+			Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+			return
+		}
+
+	}
+
+	//fmt.Print("fappointment", appointment)
+
+	appointment.ID = newID
 	appointment.Date = time.Now().String()
 	appointment.UpdateDate = time.Now().String()
 	appointment.CreatedBy = userParsed["_id"].(bson.ObjectId).Hex()
 	appointment.UpdatedBy = userParsed["_id"].(bson.ObjectId).Hex()
+
+	if userType.(int) == 2 {
+		appointment.Doctor = userParsed["_id"].(bson.ObjectId).Hex()
+	}
 
 	if err := dao.Insert("appointments", appointment, nil); err != nil {
 		Helpers.RespondWithError(w, http.StatusInternalServerError, err.Error())
@@ -2073,17 +1932,50 @@ func updateAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	userParsed := user.(bson.M)
 
+	// temporary buffer
+	b := bytes.NewBuffer(make([]byte, 0))
+
+	// TeeReader returns a Reader that writes to b what it reads from r.Body.
+	reader := io.TeeReader(r.Body, b)
+
+	var appointment Models.Appointments
+
+	var err map[string]interface{}
+	// Get the JSON body and decode into credentials
+	err0 := json.NewDecoder(reader).Decode(&appointment)
+
+	if err0 != nil {
+		// If the structure of the body is wrong, return an HTTP error
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// we are done with body
 	defer r.Body.Close()
+
+	r.Body = ioutil.NopCloser(b)
+
 	params := mux.Vars(r)
 
 	w.Header().Set("Content-type", "application/json")
 
-	err, appointment := appointmentsValidator(r)
+	if appointment.State == "PENDING" {
+		err, appointment = appointmentsScheduleValidator(r)
 
-	if len(err["validationError"].(url.Values)) > 0 {
-		//fmt.Println(len(e))
-		Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
-		return
+		fmt.Println("err", err, appointment)
+
+		if len(err["validationError"].(url.Values)) > 0 {
+			Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+			return
+		}
+	} else {
+		err, appointment = appointmentsValidator(r)
+
+		if len(err["validationError"].(url.Values)) > 0 {
+			//fmt.Println(len(e))
+			Helpers.RespondWithJSON(w, http.StatusBadRequest, err)
+			return
+		}
 	}
 
 	prevData, err2 := dao.FindByID("appointments", params["id"])
@@ -2109,7 +2001,49 @@ func updateAppointmentsEndPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("appointment to edit", appointment)
+
 	Helpers.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+
+}
+
+func confirmPatientAppointment(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	userType := context.Get(r, "userType")
+
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
+	if userType.(int) == 2 {
+		sendEmailConfirmationToPatient(params["email"], userParsed["phone"].(string))
+	}
+
+	go dao.PartialUpdate("appointments", params["appointments"], bson.M{"state": "CONFIRMED"})
+
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
+
+}
+
+func cancelPatientAppointment(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	userType := context.Get(r, "userType")
+
+	user := context.Get(r, "user")
+
+	userParsed := user.(bson.M)
+
+	if userType.(int) == 2 {
+		sendEmailCancelationToPatient(params["email"], userParsed["phone"].(string))
+	}
+
+	go dao.PartialUpdate("appointments", params["appointments"], bson.M{"state": "CANCELLED"})
+
+	Helpers.RespondWithJSON(w, http.StatusOK, nil)
 
 }
 
